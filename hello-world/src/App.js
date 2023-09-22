@@ -1,12 +1,14 @@
 import './App.css';
-import Greet from './components/Greet';
-import Welcome from './components/Welcome';
+import FunctionClick from './components/FunctionClick';
+import ClassClick from './components/ClassClick';
+import EvenBind from './components/EvenBind';
 
 function App() {
   return (
     <div>
-      <Greet firstName='Samadhi' lastName='Laksahan' />
-      <Welcome firstName='Malani' lastName='Ratnayaka' />
+      <FunctionClick/>
+      <ClassClick/>
+      <EvenBind/>
     </div>
   );
 }
