@@ -6,9 +6,7 @@ import EvenBind from './components/EvenBind';
 function App() {
   return (
     <div>
-      <FunctionClick/>
-      <ClassClick/>
-      <EvenBind/>
+
     </div>
   );
 }
