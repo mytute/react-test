@@ -71,5 +71,37 @@ const Greet = (props) => {
 export default Greet;
 ```
 
+4. show props are immutable by changing 'props.name' vlaue in the function body. see error on browser.  
+Greet.js 
+```js
+import React from 'react';
+
+const Greet = (props) => {
+  props.name = 'new name';
+  return (
+    <div>
+      {props.name }
+    </div>
+  )
+} 
+export default Greet;
+```
+
 
 ### class component
+
+4. show using 'Welcome' class component how to recive props in class component and do same as result in 'Greet' compoenent.     
+Welcome.js
+```js 
+import React, { Component } from 'react'
+
+export class Welcome extends Component {
+  render() {
+    return (
+      <div>Welcome {this.props.name}</div>
+    )
+  }
+}
+
+export default Welcome
+```

@@ -1,5 +1,6 @@
 import './App.css';
 import Greet from './components/Greet';
+import Welcome from './components/Welcome';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
          <label>show me</label>
          <button>click</button>
       </Greet>
+      <Welcome name='Class Props'/>
     </div>
   );
 }
