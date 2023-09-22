@@ -1,12 +1,11 @@
 import './App.css';
-import FunctionClick from './components/FunctionClick';
-import ClassClick from './components/ClassClick';
-import EvenBind from './components/EvenBind';
+import ParentComponent from './components/ParentComponent';
+
 
 function App() {
   return (
     <div>
-
+      <ParentComponent/>
     </div>
   );
 }

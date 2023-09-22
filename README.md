@@ -1,145 +1,76 @@
-# Event Handling
+# Methods as props
 
-In React event are name using camele case rather then lowercase.   
+child component communicate parent component as event.  
 
-1. create new functional component call 'FunctionClick' and add button to fire console.log message when click it. 
- FunctionClick.js   
+1. create functional component call 'ChildComponent' in component folder and set the button to execute props function when click the button.    
+ChildComponent.js   
 ```js 
 import React from 'react';
 
-const FunctionClick = () => {
-    
-  const clickHandler = () =>{
-    console.log('button click');
-  }
+const ChildComponent = ({greetHandler}) => {
   return (
     <div>
-        <button onClick={clickHandler}>Click</button>
+        <button onClick={greetHandler}>Greet Parent</button>
     </div>
   )
 }
 
-export default FunctionClick;
+export default ChildComponent;
 ```
 
-2. show there is no result if you call 'clickHandler()' function inside onClick. 
-
-3. create new class component call 'ClassClick' and add button to fire console.log message when click it. 
- ClassClick.js   
+1. create class component call 'ParentComponent' in component folder make 'ChildComponent' as it's child and pass 'greetParent' function to 'ChildComponent' that define on 'ParentComponent' body.   
+ParentComponent.js   
 ```js 
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import ChildComponent from './ChildComponent';
 
-class ClassClick extends Component {
-  clickHandler() {
-    console.log('button click');
-  }
+class ParentComponent extends Component {
+    constructor(props) {
+      super(props)
+    
+      this.state = {
+         parentName: 'Parent'
+      }
+      this.greetParent = this.greetParent.bind(this);
+    }
+    greetParent(){
+        alert( `Hello ${this.state.parentName}`); // `` is template literal 
+    }
   render() {
     return (
       <div>
-        <button onClick={this.clickHandler}>Click Me</button>
+        <ChildComponent greetHandler={this.greetParent}/>
       </div>
-    );
+    )
   }
 }
 
-export default ClassClick;
+export default ParentComponent;
 ```
 
-4. create new class component call 'EvenBind' and add button to change message in following way and see the error. And notice 'this' keyword in 'clickHandler' function is undefined.   
-EventBind.js   
+3. show when click 'ChildComponent' button make execute 'ParentComponent' method.  
+
+4. show how to pass value in above function child to parent as argument. 
+convert 'ChildComponent' onClick function in to arrow function and pass parameter to it.
+
+ChildComponent.js   
 ```js 
-import React, { Component } from "react";
+import React from 'react';
 
-class EvenBind extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      message: "Hello",
-    };
-  }
-
-  clickHandler() {
-    console.log(this);
-    this.setState({ message: "Goodbye!" });
-  }
-  render() {
-    return (
-      <div>
-        <div>{this.state.message}</div>
-        <button onClick={this.clickHandler}>Click Me</button>
-      </div>
-    );
-  }
+const ChildComponent = ({greetHandler}) => {
+  return (
+    <div>
+        <button onClick={()=>{greetHandler('child')}}>Greet Parent</button>
+    </div>
+  )
 }
 
-export default EvenBind;
+export default ChildComponent;
 ```
 
-5. show how to bind 'this' keyword with 'clickHandler' function inside 'render' method by .bind() method.  
-because of every render it will create new event handler that not good for perfomance.    
-EventBind.js   
+ParentComponent.js   
 ```js 
-  render() {
-    return (
-      <div>
-        <div>{this.state.message}</div>
-        <button onClick={this.clickHandler.bind(this)}>Click Me</button>
-      </div>
-    );
-  }
+    greetParent(childName){
+        alert( `Hello ${this.state.parentName} ${childName}`);
+    }
 ```
-
-6. show how to bind 'this' keyword with 'clickHandler' function inside 'render' method by arrow function.  
-this method also not good for perfomance.    
-EventBind.js   
-```js 
-  render() {
-    return (
-      <div>
-        <div>{this.state.message}</div>
-        <button onClick={()=>{this.clickHandler()}}>Click Me</button>
-      </div>
-    );
-  }
-```
-
-7. show how to bind 'this' keyword with 'clickHandler' function inside 'constructor' method by .bind() method.  
-this is the recommended way in react doc. 
-EventBind.js   
-```js 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      message: "Hello",
-    };
-    this.clickHandler = this.clickHandler.bind(this);
-  }
-  render() {
-    return (
-      <div>
-        <div>{this.state.message}</div>
-        <button onClick={this.clickHandler}>Click Me</button>
-      </div>
-    );
-  }
-```
-
-8. show how to bind 'this' keyword with 'clickHandler' function by convert it to arrow function.  
-this is the recommended way in react doc. 
-EventBind.js   
-```js 
-  clickHandler = () => {
-    this.setState({ message: "Goodbye!" });
-  }
-  render() {
-    return (
-      <div>
-        <div>{this.state.message}</div>
-        <button onClick={this.clickHandler}>Click Me</button>
-      </div>
-    );
-  }
-```
-
