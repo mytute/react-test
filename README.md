@@ -1,74 +1,107 @@
-# JSX 
+# Peops (properties)
 
-JSX makes simplycity on your code.  
+### funtional component   
 
+1. in 'App.js' component repeat 'Greet' component 3 times and see the result. 
+App.js
+```js
+import './App.css';
+import Greet from './components/Greet';
 
-1. create new functional component call 'Hello.js' in components folder. 'snipt:rafce'. and test it.
-Hello.js
+function App() {
+  return (
+    <div >
+       <Greet/>
+       <Greet/>
+       <Greet/>
+    </div>
+  );
+}
+
+export default App;
+```
+
+2. show how to change name of the greet person for from the parent.  
+
+App.js
+```js
+    <Greet name='Samadhi'/>
+    <Greet name='Pasindu'/>
+    <Greet name='Saman'/>
+```
+
+Greet.js 
 ```js
 import React from 'react';
 
-const Hello = () => {
+const Greet = (props) => {
+  return (
+    <div>Hello {props.name}</div>
+  )
+} 
+
+export default Greet;
+```
+
+3. show how to pass not sure property/properties as children to the last Greet(child) component.  
+convert seft closing tag to open-close tag to pass chilren from parent.
+
+App.js    
+```js
+    <Greet name='Samadhi'/>
+    <Greet name='Pasindu'/>
+    <Greet name='Saman'> 
+        <label>show me</label>
+        <button>click</button>
+    </Greet>
+```
+
+Greet.js 
+```js
+import React from 'react';
+
+const Greet = (props) => {
+  return (
+    <>
+    <div>Hello {props.name}</div>
+    {props.children}
+    </>
+  )
+} 
+export default Greet;
+```
+
+4. show props are immutable by changing 'props.name' vlaue in the function body. see error on browser.  
+Greet.js 
+```js
+import React from 'react';
+
+const Greet = (props) => {
+  props.name = 'new name';
   return (
     <div>
-        <h2>Hello Samadhi</h2>
+      {props.name }
     </div>
   )
+} 
+export default Greet;
+```
+
+
+### class component
+
+4. show using 'Welcome' class component how to recive props in class component and do same as result in 'Greet' compoenent.     
+Welcome.js
+```js 
+import React, { Component } from 'react'
+
+export class Welcome extends Component {
+  render() {
+    return (
+      <div>Welcome {this.props.name}</div>
+    )
+  }
 }
 
-export default Hello;
+export default Welcome
 ```
-
-3. now rewrite above 'Hello' component without JSX. and show 'h1' not working here.
-Hello.js
-```js 
-import React from 'react';
-
-const Hello = () => {
- /**
-  * @param div tag name
-  * @param null attributes for tag like class, disable .. etc
-  * @param ' '  childrens 
-  */
-   return React.createElement('div', null, 'Hello Samadhi');
-}
-
-export default Hello;
-```
-
-4. wrap 'h1' tag around chilren and show 'h1' tag print as string on browser .
-Hello.js
-```js 
-import React from 'react';
-
-const Hello = () => {
-   return React.createElement('div', null, '<h1>Hello Samadhi</h1>');
-}
-
-export default Hello;
-```
-
-5. because of 'createElement' can get n number of children after 2nd parameter then add h1 as 3 parameter and 'Hello Samadhi' as 4 parameter. but show it also not work as expecting.   
-Hello.js
-```js 
-import React from 'react';
-
-const Hello = () => {
-   return React.createElement('div', null, React.createElement('h1', null, 'Hello Samadhi') );
-}
-export default Hello;
-```
-
-6. show how to add 'id' and 'class' style for the html element when we are using 'createElement'.   
-and show console error when we use 'class' keyword for styles instead of 'className'. 
-Hello.js
-```js 
-React.createElement('div', {id:'hello', class: 'dymmyClass'} , React.createElement('h1', null, 'Hello Samadhi') );
-```
-
-
-### JSX differences  
-Class -> className
-for -> htmlFor
-onclick -> onClick
-tabindex -> tabIndex
