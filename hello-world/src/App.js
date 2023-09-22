@@ -5,7 +5,8 @@ import Welcome from './components/Welcome';
 function App() {
   return (
     <div >
-
+      <Greet firstName='Samadhi' lastName='Laksahan' />
+      <Welcome firstName='Malani' lastName='Ratnayaka'/>
     </div>
   );
 }
