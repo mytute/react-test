@@ -1,95 +1,74 @@
-# Components  
+# JSX 
+
+JSX makes simplycity on your code.  
 
 
-### functional component 
-
-1. create new folder call 'components' and within the folder create file call 'Greet.js'.
-
-2. in 'Greet.js' file create react functional component and export it,
-Greet.js
+1. create new functional component call 'Hello.js' in components folder. 'snipt:rafce'. and test it.
+Hello.js
 ```js
 import React from 'react';
 
-function Greet(){
-    return <h1>Hello Samadhi</h1>
-}
-
-export default Greet;
-```
-
-3. in App component remove all html elements except outer div tags and add 'Greet' component  in App.js file as self closing custom html tag "<ComponentName/>"
-App.js
-```js 
-import './App.css';
-import Greet from './components/Greet';
-
-function App() {
+const Hello = () => {
   return (
-    <div >
-       <Greet/>
+    <div>
+        <h2>Hello Samadhi</h2>
     </div>
-  );
+  )
 }
 
-export default App;
+export default Hello;
 ```
 
-4. Rewrite 'Greet' component in es6 arrow function syntax.   
-Greet.js
+3. now rewrite above 'Hello' component without JSX. and show 'h1' not working here.
+Hello.js
 ```js 
 import React from 'react';
 
-const Greet = () => <h1>Hello Samadhi</h1>;
+const Hello = () => {
+ /**
+  * @param div tag name
+  * @param null attributes for tag like class, disable .. etc
+  * @param ' '  childrens 
+  */
+   return React.createElement('div', null, 'Hello Samadhi');
+}
 
-export default Greet;
+export default Hello;
 ```
 
-5. show using 'export default' can import any name on 'App.js' file.  
-App.js
+4. wrap 'h1' tag around chilren and show 'h1' tag print as string on browser .
+Hello.js
 ```js 
-import './App.css';
-import Greet2 from './components/Greet';
+import React from 'react';
 
-function App() {
-  return (
-    <div >
-       <Greet2/>
-    </div>
-  );
+const Hello = () => {
+   return React.createElement('div', null, '<h1>Hello Samadhi</h1>');
 }
 
-export default App;
+export default Hello;
 ```
 
-5. show using only 'export' can only import same name on 'App.js' file inside cruly braces. This is call 'name export'  
-App.js
+5. because of 'createElement' can get n number of children after 2nd parameter then add h1 as 3 parameter and 'Hello Samadhi' as 4 parameter. but show it also not work as expecting.   
+Hello.js
 ```js 
-import './App.css';
-import { Greet } from './components/Greet';
+import React from 'react';
 
-function App() {
-  return (
-    <div >
-       <Greet/>
-    </div>
-  );
+const Hello = () => {
+   return React.createElement('div', null, React.createElement('h1', null, 'Hello Samadhi') );
 }
-
-export default App;
+export default Hello;
 ```
 
-### class component 
-
-6. creat new file call 'Welcom.js' inside component and create class comopnent in it that can get same result as above 'Greet' component. And import it in to App.js component as before.    
-Welcome.js
-```js  
-import React, {Component} from 'react';
-
-class Welcome extends Component {
-    render(){
-        return <h1>Class Component</h1>
-    }
-}
-
-export default Welcome;
+6. show how to add 'id' and 'class' style for the html element when we are using 'createElement'.   
+and show console error when we use 'class' keyword for styles instead of 'className'. 
+Hello.js
+```js 
+React.createElement('div', {id:'hello', class: 'dymmyClass'} , React.createElement('h1', null, 'Hello Samadhi') );
 ```
+
+
+### JSX differences  
+Class -> className
+for -> htmlFor
+onclick -> onClick
+tabindex -> tabIndex
