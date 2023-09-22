@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 export class Welcome extends Component {
   render() {
@@ -8,4 +8,4 @@ export class Welcome extends Component {
   }
 }
 
-export default Welcome;
+export default Welcome

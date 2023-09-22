@@ -1,107 +1,182 @@
-# Peops (properties)
+# State  
 
-### funtional component   
+### state basic    
 
-1. in 'App.js' component repeat 'Greet' component 3 times and see the result. 
-App.js
-```js
-import './App.css';
-import Greet from './components/Greet';
-
-function App() {
-  return (
-    <div >
-       <Greet/>
-       <Greet/>
-       <Greet/>
-    </div>
-  );
-}
-
-export default App;
-```
-
-2. show how to change name of the greet person for from the parent.  
-
-App.js
-```js
-    <Greet name='Samadhi'/>
-    <Greet name='Pasindu'/>
-    <Greet name='Saman'/>
-```
-
-Greet.js 
-```js
-import React from 'react';
-
-const Greet = (props) => {
-  return (
-    <div>Hello {props.name}</div>
-  )
-} 
-
-export default Greet;
-```
-
-3. show how to pass not sure property/properties as children to the last Greet(child) component.  
-convert seft closing tag to open-close tag to pass chilren from parent.
-
-App.js    
-```js
-    <Greet name='Samadhi'/>
-    <Greet name='Pasindu'/>
-    <Greet name='Saman'> 
-        <label>show me</label>
-        <button>click</button>
-    </Greet>
-```
-
-Greet.js 
-```js
-import React from 'react';
-
-const Greet = (props) => {
-  return (
-    <>
-    <div>Hello {props.name}</div>
-    {props.children}
-    </>
-  )
-} 
-export default Greet;
-```
-
-4. show props are immutable by changing 'props.name' vlaue in the function body. see error on browser.  
-Greet.js 
-```js
-import React from 'react';
-
-const Greet = (props) => {
-  props.name = 'new name';
-  return (
-    <div>
-      {props.name }
-    </div>
-  )
-} 
-export default Greet;
-```
-
-
-### class component
-
-4. show using 'Welcome' class component how to recive props in class component and do same as result in 'Greet' compoenent.     
-Welcome.js
+1. create new class component call 'Message' and print a message test "Welcome Visitor".    
+Message.js    
 ```js 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-export class Welcome extends Component {
+export class Message extends Component {
   render() {
     return (
-      <div>Welcome {this.props.name}</div>
+      <div>Welcome Visitor</div>
     )
   }
 }
+export default Message;
+``` 
 
-export default Welcome
+2. show how to change above component message to "Thank you for subscribing" when click button in 'Message' component. for now use arrow function for click event with state change.        
+Message.js    
+```js 
+export class Message extends Component {
+  
+  constructor(){
+    super();
+    this.state = {
+        message: "Welcome Visitor"
+    }
+  }
+  
+  changeMessage(){
+    this.setState({
+        message: "Thank you for subscribing"
+    })
+  }
+
+  render() {
+    return (
+      <>
+        <div>{this.state.message}</div>
+        <button onClick={()=>{this.changeMessage()}} >Click</button>
+      </>
+    )
+  }
+}
+``` 
+
+### setState     
+
+3. create new class component call 'Counter' and implement counter increment when click the button. And make console.log after setState function to see updated counter value.        
+* here notice DOM counter value always behind log value because of setStatus is async function.      
+Counter.js    
+```js
+import React, { Component } from 'react';
+
+class Counter extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            count:0
+        }
+    }
+
+    increment(){
+        this.setState({
+            count: this.state.count+1
+        })
+        console.log(this.state.count);
+    }
+
+    render() {
+        return (
+        <>
+          <div>{this.state.count}</div>
+          <button onClick={()=>{this.increment()}}>Increment</button>
+        </>
+        )
+    }
+}
+
+export default Counter;
+```
+
+4. show in above counter-increment example how to match DOM count and console.log count using setStatus callback.        
+Counter.js   
+```js  
+    increment(){
+        this.setState({
+            count: this.state.count+1
+        },()=>{
+            console.log(this.state.count);
+        })
+    }
+```
+
+
+5. In above counter-increment example in increment function change state value direcly and see results  
+* here this will change 'count' value in console.log but not updating the DOM. 
+Counter.js    
+```js
+    increment(){
+        this.state.count = this.state.count +1;
+        console.log(this.state.count);
+    }
+
+```
+
+6. For counter example create new function call 'incrementFile' and inside it call 'increment' function 5 times and see the result.    
+* becuse react group multiple setState in to single update for better performance. 
+Counter.js    
+```js  
+class Counter extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            count:0
+        }
+    }
+
+    incrementFive(){
+        this.increment();
+        this.increment();
+        this.increment();
+        this.increment();
+        this.increment();
+    }
+
+    increment(){
+        this.setState({
+            count: this.state.count+1
+        },()=>{
+            console.log(this.state.count);
+        })
+
+    }
+
+    render() {
+        return (
+        <>
+          <div>{this.state.count}</div>
+          <button onClick={()=>{this.incrementFive()}}>Increment</button>
+        </>
+        )
+    }
+
+```
+
+7. show how to avoid group multiple setState in to single update with setState previous state value.   
+Counter.js    
+```js  
+    incrementFive(){
+        this.increment();
+        this.increment();
+        this.increment();
+        this.increment();
+        this.increment();
+    }
+
+    increment(){
+        this.setState((prevState)=>{
+          return ({
+            count: prevState.count +1
+          })
+        })
+    }
+
+```
+8. show how to use props with setState function    
+Counter.js    
+```js  
+    increment(){
+        this.setState((prevState, props)=>{
+          return ({
+            count: prevState.count + props.count // just for show only
+          })
+        })
+    }
+
 ```
