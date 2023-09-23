@@ -1,76 +1,75 @@
-# Methods as props
+# Conditional Rendering
 
-child component communicate parent component as event.  
+you need to show or hide elements on conditions
 
-1. create functional component call 'ChildComponent' in component folder and set the button to execute props function when click the button.    
-ChildComponent.js   
-```js 
-import React from 'react';
+* if/else.
+* Element variable.
+* Ternary conditional operator.  
+* Short circuit operator.
 
-const ChildComponent = ({greetHandler}) => {
-  return (
-    <div>
-        <button onClick={greetHandler}>Greet Parent</button>
-    </div>
-  )
-}
-
-export default ChildComponent;
-```
-
-1. create class component call 'ParentComponent' in component folder make 'ChildComponent' as it's child and pass 'greetParent' function to 'ChildComponent' that define on 'ParentComponent' body.   
-ParentComponent.js   
-```js 
+1. create new class component call 'UserGreeting' in component folder and make it show "Welcome Samadhi" and "Welcome Gust" message.  
+UserGreeting.js   
+```js
 import React, { Component } from 'react';
-import ChildComponent from './ChildComponent';
 
-class ParentComponent extends Component {
+class UserGreeting extends Component {
     constructor(props) {
       super(props)
     
       this.state = {
-         parentName: 'Parent'
+         isLoggedIn: false
       }
-      this.greetParent = this.greetParent.bind(this);
-    }
-    greetParent(){
-        alert( `Hello ${this.state.parentName}`); // `` is template literal 
     }
   render() {
     return (
       <div>
-        <ChildComponent greetHandler={this.greetParent}/>
+        <div>Welcome Samadhi</div>
+        <div>Welcome Gust</div>
       </div>
     )
   }
 }
-
-export default ParentComponent;
+export default UserGreeting;
 ```
 
-3. show when click 'ChildComponent' button make execute 'ParentComponent' method.  
-
-4. show how to pass value in above function child to parent as argument. 
-convert 'ChildComponent' onClick function in to arrow function and pass parameter to it.
-
-ChildComponent.js   
-```js 
-import React from 'react';
-
-const ChildComponent = ({greetHandler}) => {
-  return (
-    <div>
-        <button onClick={()=>{greetHandler('child')}}>Greet Parent</button>
-    </div>
-  )
-}
-
-export default ChildComponent;
-```
-
-ParentComponent.js   
-```js 
-    greetParent(childName){
-        alert( `Hello ${this.state.parentName} ${childName}`);
+2. show how to show "Welcome Samadhi" message when user logged in and if not show "Welcome Gust" using if/else conditions.   if/else not working inside jsx and we can't put if/else inside return elements.  
+UserGreeting.js   
+```js
+  render() {
+    if(this.state.isLoggedIn){
+        return <div>Welcome Samadhi</div>
+    }else{
+        return <div>Welcome Gust</div>
     }
+  }
+```
+
+3. show how to show "Welcome Samadhi" message when user logged in and if not show "Welcome Gust" using element variables. 
+UserGreeting.js   
+```js
+  render() {
+    let message;
+    if(this.state.isLoggedIn){
+      message = <div>Welcome Samadhi</div>;
+    }else{
+        message = <div>Welcome Gust</div>;
+    }
+    return <div>{message}</div>
+  }
+```
+
+4. show how to show "Welcome Samadhi" message when user logged in and if not show "Welcome Gust" using ternary conditional operator. 
+UserGreeting.js   
+```js
+  render() {
+    return this.state.isLoggedIn ?  <div>Welcome Samadhi</div> : <div>Welcome Gust</div>
+  }
+```
+
+5. show how to show "Welcome Samadhi" message when user logged in using short circuit operator. 
+UserGreeting.js   
+```js
+  render() {
+    return this.state.isLoggedIn && <div>Welcome Samadhi</div>
+  }
 ```
