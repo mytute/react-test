@@ -4,7 +4,7 @@ import UserGreeting from './components/UserGreeting'
 function App() {
   return (
     <div>
-      <UserGreeting/>
+
     </div>
   );
 }
