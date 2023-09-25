@@ -1,77 +1,127 @@
-# List Rendering
+# Styling and CSS Basics 
 
-1. create new functional component call 'NameList' in component folder and create array of name in it. show how to show this list using map function.   
-NameList.js
-```js 
+* CSS stylesheets.
+* Inline styling.
+* CSS Modules.
+* CSS in JS Libaries.
+
+# CSS stylesheets   
+
+1. show how to make styles in react component by imported css file. 
+* create functional component call 'Stylesheet' and css file call 'myStyles.css' in the same location and import style file in to 'Stylesheet' component.
+* create and css class in 'myStyles.css' file and apply in to component element.       
+Stylesheet.js  
+```js
 import React from 'react';
+import './myStyles.css'
 
-const NameList = () => {
-
-  const names = ['Samadhi', 'Laksahan', 'Piyasiri'];
-  const nameList = names.map(name=> <h2>{name}</h2>);
-  return (
-    <div>{nameList}</div>
-  )
-}
-
-export default NameList;
-```
-
-2. curly braces is way to implement js code inside jsx. show same (1) example do inside jsx.   
-NameList.js
-```js 
-import React from 'react';
-
-const NameList = () => {
-
-  const names = ['Samadhi', 'Laksahan', 'Piyasiri'];
-  return (
-    <>
-      {names.map(name=> <h2>{name}</h2> )}
-    </>
-  )
-}
-
-export default NameList;
-```
-
-3. show error in console log warning about list key props. show how to fix this issue using unique key to the outer tag of item list.   
-NameList.js
-```js 
-  return (
-    <>
-      {names.map(name=> <h2 key={name} > {name}</h2> )}
-    </>
-  )
-```
-4. show 'key' attribute is recerved by react. so we can use that word for our custom props.
-App.js
-```js 
+const Stylesheet = () => {
   return (
     <div>
-     <NameList key="samadhi"/>
+        <h1 className='primary'> Stylesheet</h1>
     </div>
-  );
+  )
+}
+export default Stylesheet;
+```
+myStyles.css
+```css 
+.primary{
+    color: orange;
+}
 ```
 
-NameList.js
+2. show how to apply dyanmic styles in to component according to value pass by parent component.   
+* in 'App.js' file add props 'primary={true}' to 'Styleseet' tag.  
+App.js  
+```js
+<Stylesheet primary={true}/>
+```
+
+Stylesheet.js  
+```js
+const Stylesheet = ({primary}) => {
+    let className = primary ? 'primary' : '';
+  return (
+    <div>
+        <h1 className={className}> Stylesheet</h1>
+    </div>
+  )
+}
+```
+
+3. show how to apply styles using template literal.   
+* in 'myStyles.css' add new style and add it to same 'Stylesheet' using backticks .  
+
+myStyles.css
+```css 
+.font-xl{
+    color: orange;
+}
+```
+
+Stylesheet.js  
+```js
+    <div>
+        <h1 className={`${className} font-xl`}> Stylesheet</h1>
+    </div>
+```
+
+4. show how to add inline styles to the component tag.
+
+this styles are like object whose key is the camel cased version of the style names the value is usually a string.
+
+* create new functional component call 'Inline.js' add fontSize and color styles to h1 tag.   
+Inline.js   
 ```js 
 import React from 'react';
 
-const NameList = ({key}) => {
-  return <></>
+const Inline = () => {
+  const heading ={
+    fontSize: '72px',
+    color: 'blue'
+  }
+  return (
+    <div>
+     <h1 style={heading}>Inline</h1>
+    </div>
+  )
 }
 
+export default Inline;
 ```
 
-### List and Keys.    
-* A "key" is a special string attribute you need to include when creating list of elements.   
-* Keys give the elements a stable identity.   
-* Kyes help React identify which items have changed, are added, or are removed.   
-* Help in efficient update of the user interface.  
+5. show how to use CSS modules (update react-script package to major version 2)  
 
-### Index as Key Anti-pattern.   
+* create file with suffixed '.module.css'  name call 'appStyles.module.css'.   
+* create another regular styleseet call 'appStyles.css' 
+* import both files to 'App.js' file.   
 
-show example that issues when using map function index. 
+App.js   
+```js 
+import './App.css';
+import './appStyles.css'; // not how to import 
+import styles from './appStyles.module.css'; // note how to import 
 
-// TODO
+function App() {
+  return (
+    <div>
+      <h1 className='error'>Error</h1>
+      <h1 className={styles.success}>Success</h1>
+    </div>
+  );
+}
+
+export default App;
+```
+
+6. show css moudles scope to component and regular css styles apply hole dom when it import to dom tree some where event in child component.  
+
+* in 'App.js' component add h2 tag with 'font-xl' that css import in 'Stylesheet' child component and show styles are added.    
+App.js   
+```js 
+<h1 className='font-xl'> Stylesheet</h1>
+```
+* in Stylesheet component remove 'import './myStyles.css';' and show above added styles are gone.   
+
+* in Stylesheet component add '<h1 className='success'>Child Success</h1>' and show in 'appStyles.module.css' file's 'success' styles not added.
