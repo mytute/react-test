@@ -1,127 +1,127 @@
-# Styling and CSS Basics 
+#  Basics of Form Handling  
 
-* CSS stylesheets.
-* Inline styling.
-* CSS Modules.
-* CSS in JS Libaries.
+form elements whose value is controlled by react is called a controlled components.   
 
-# CSS stylesheets   
+1. show how to control input text in the form tag using react state.    
+* create new class component call 'Form' and add 'label' and 'input' elements in it and show it is working as regular input on the browser.   
+* in component create new state call username and add input value to this state and show now your input values not update on input element on browser.   
+* in component add 'onChange' event to change state for input element and now show input values are update on the browser.    
 
-1. show how to make styles in react component by imported css file. 
-* create functional component call 'Stylesheet' and css file call 'myStyles.css' in the same location and import style file in to 'Stylesheet' component.
-* create and css class in 'myStyles.css' file and apply in to component element.       
-Stylesheet.js  
-```js
-import React from 'react';
-import './myStyles.css'
-
-const Stylesheet = () => {
-  return (
-    <div>
-        <h1 className='primary'> Stylesheet</h1>
-    </div>
-  )
-}
-export default Stylesheet;
-```
-myStyles.css
-```css 
-.primary{
-    color: orange;
-}
-```
-
-2. show how to apply dyanmic styles in to component according to value pass by parent component.   
-* in 'App.js' file add props 'primary={true}' to 'Styleseet' tag.  
-App.js  
-```js
-<Stylesheet primary={true}/>
-```
-
-Stylesheet.js  
-```js
-const Stylesheet = ({primary}) => {
-    let className = primary ? 'primary' : '';
-  return (
-    <div>
-        <h1 className={className}> Stylesheet</h1>
-    </div>
-  )
-}
-```
-
-3. show how to apply styles using template literal.   
-* in 'myStyles.css' add new style and add it to same 'Stylesheet' using backticks .  
-
-myStyles.css
-```css 
-.font-xl{
-    color: orange;
-}
-```
-
-Stylesheet.js  
-```js
-    <div>
-        <h1 className={`${className} font-xl`}> Stylesheet</h1>
-    </div>
-```
-
-4. show how to add inline styles to the component tag.
-
-this styles are like object whose key is the camel cased version of the style names the value is usually a string.
-
-* create new functional component call 'Inline.js' add fontSize and color styles to h1 tag.   
-Inline.js   
+Form.js   
 ```js 
-import React from 'react';
+import React, { Component } from "react";
 
-const Inline = () => {
-  const heading ={
-    fontSize: '72px',
-    color: 'blue'
+class Form extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      username: "",
+    };
   }
-  return (
-    <div>
-     <h1 style={heading}>Inline</h1>
-    </div>
-  )
+  handleUsernameChange = (event) => {
+    this.setState({ username: event.target.value });
+  };
+  render() {
+    return (
+      <form>
+        <div>
+          <label>Username</label>
+          <input
+            type="text"
+            value={this.state.username}
+            onChange={this.handleUsernameChange}
+          />
+        </div>
+      </form>
+    );
+  }
 }
 
-export default Inline;
+export default Form;   
 ```
 
-5. show how to use CSS modules (update react-script package to major version 2)  
-
-* create file with suffixed '.module.css'  name call 'appStyles.module.css'.   
-* create another regular styleseet call 'appStyles.css' 
-* import both files to 'App.js' file.   
-
-App.js   
+2. show how to add textarea as control form in react.
+Form.js   
 ```js 
-import './App.css';
-import './appStyles.css'; // not how to import 
-import styles from './appStyles.module.css'; // note how to import 
 
-function App() {
-  return (
-    <div>
-      <h1 className='error'>Error</h1>
-      <h1 className={styles.success}>Success</h1>
-    </div>
-  );
-}
+    this.state = {
+      username: '',
+      comment: ''
+    };
+  
 
-export default App;
+  handleCommentChange = (event) => {
+    this.setState({ comment: event.target.value });
+  };
+  render() {
+    return (
+      <form>
+        <div>
+          <label>Comment</label>
+          <textarea
+            value={this.state.comment}
+            onChange={this.handleCommentChange}
+          />
+        </div>
+      </form>
+    );
+  }
 ```
 
-6. show css moudles scope to component and regular css styles apply hole dom when it import to dom tree some where event in child component.  
-
-* in 'App.js' component add h2 tag with 'font-xl' that css import in 'Stylesheet' child component and show styles are added.    
-App.js   
+3. show how to add select element as control form in react.
+Form.js   
 ```js 
-<h1 className='font-xl'> Stylesheet</h1>
-```
-* in Stylesheet component remove 'import './myStyles.css';' and show above added styles are gone.   
 
-* in Stylesheet component add '<h1 className='success'>Child Success</h1>' and show in 'appStyles.module.css' file's 'success' styles not added.
+    this.state = {
+      username: '',
+      comment: '',
+      topic:'react'
+    };
+  
+  handleTopicChange = (event) => {
+    this.setState({ topic: event.target.value });
+  };
+
+  render() {
+    return (
+      <form>
+        <div>
+          <label>Topic</label>
+          <select value={this.state.topic} onChange={this.handleTopicChange}>
+             <option value="react">React</option>
+             <option value="angular">Angular</option>
+             <option value="view">View</option>
+          </select>
+        </div>
+      </form>
+    );
+  }
+```
+
+4. let's see how to submit form data.   
+* add 'onSubmit' event for form tag.  
+* add 'event.preventDefault()' function to 'handleSubmit' function not to refresh ater submit.
+
+Form.js   
+```js 
+
+    this.state = {
+      username: '',
+      comment: '',
+      topic:'react'
+    };
+  
+  handleSubmit = (event) =>{
+    console.log(this.state);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <button type="submit" >submit</button>
+      </form>
+    );
+  }
+```
