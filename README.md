@@ -86,3 +86,21 @@ export default PureComp;
 
 2. In the console area show only Regular component update render method and Pure component not.
 
+3. show how to use memo as higher order function to achieve same behaviour as Pure Component.  
+ * create new functional component call 'MemoComp' as child compoent of 'ParentComp'.    
+
+MemoComp.js
+```js  
+import React from 'react';
+
+const MemoComp = ({name}) => {
+  console.log("************ memo component render ******************");
+  return (
+    <div>{name}</div>
+  )
+}
+
+export default React.memo(MemoComp);
+// export default MemoComp;
+```
+
