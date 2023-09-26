@@ -1,139 +1,88 @@
-# Fragments  
+# Pure Components   
 
-group a list of children without adding extra nodes to the Dom
+There is a another way to create class component without 'React.Component'.
 
-1. create functional component call 'FragmentDemo' in component folder and add multiple html tag in to return brackets and show following error on browser window.
+Regular Component.   
+* A regular component does not implement the shouldComponentUpdate method. It always returns true by default.   
 
-```bash
-Parsing error: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment..
-```
 
-FragmentDemo.js
+Pure Component.   
+* A pure component on the other hand implements 'shuldComponentUpdate' with a shallow props and state comporison.   
+<img src="hello-world/public/comporison01.png" >
+<img src="hello-world/public/comporison02.png" >
+
+1. create class component call 'ParentComp' in component folder and make two children call 'PureComp' and 'RegComp' and put console.log for render function for both child. 
+* in 'Parent' component push state change function with timer.   
+
+ParentComp.js
 ```js
-import React from 'react';
+import React, { Component } from 'react';
+import RegComp from './RegComp';
+import PureComp from './PureComp';
 
-const FragmentDemo = () => {
-  return (
-    <h1>Fragment Demo</h1>
-    <p>This description the Fragment Demo component</p>
-  )
+class ParentComp extends Component {
+    constructor(props) {
+      super(props)
+    
+      this.state = {
+         name: 'Samadhi'
+      }
+      this.timer = null;
+    }
+    componentDidMount(){
+        this.timer = setInterval(()=>{
+          this.setState({name:'Laksahan'})
+        }, 2000)
+    }
+    componentWillUnmount(){
+      clearInterval(this.timer);
+    }
+  render() {
+    console.log("************ parent component render ******************");
+    return (
+      <div>
+        <RegComp name={this.state.name}/>
+        <PureComp name={this.state.name}/>
+      </div>
+    )
+  }
 }
 
-export default FragmentDemo;
+export default ParentComp;
 ```
 
-2. to resolve above issue enclose returing html elements with div tag and in browser inspect show it added on DOM.
-
-FragmentDemo.js
+RegComp.js 
 ```js
+import React, { Component } from 'react';
 
-  return (
-    <div>
-        <h1>Fragment Demo</h1>
-        <p>This description the Fragment Demo component</p>
-    </div>
-  )
-```
+class RegComp extends Component {
 
-3. add 'React.Fragment' instead of div tag and show .
-
-FragmentDemo.js
-```js
-
-  return (
-    <React.Fragment>
-        <h1>Fragment Demo</h1>
-        <p>This description the Fragment Demo component</p>
-    </React.Fragment>
-  )
-```
-
-4. show how 'React.Fragment' are helps to fix divide related html elements to different component.     
-* create new component call 'Table.js' and 'Column.js' in component folder. 
-* in 'Table.js' component create html table and only 'td' tag add to 'Column.js' as child and show this will getting error.  
-
-Table.js
-```js 
-import React from "react";
-import Column from "./Column";
-
-const Table = () => {
-  return (
-    <table>
-      <tbody>
-        <tr>
-          <Column/>
-        </tr>
-      </tbody>
-    </table>
-  );
-};
-
-export default Table;
-```
-
-Column.js
-```js 
-import React from 'react';
-
-const Column = () => {
-  return (
-    <div>
-      <td>Name</td>
-      <td>Vishwas</td>
-    </div>
-  )
+  render() {
+    console.log("************ regComp component render ******************");
+    return (
+      <div>Regular Component {this.props.name}</div>
+    )
+  }
 }
 
-export default Column;
+export default RegComp;
 ```
 
-5. show how to fix above issue by replacing 'React.Fragment' instead of outer 'div' tag of the 'Colum' component.  
+PureComp.js 
+```js
+import React, { PureComponent } from 'react';
 
-Column.js
-```js 
-  return (
-    <React.Fragment>
-      <td>Name</td>
-      <td>Vishwas</td>
-    </React.Fragment>
-  )
+class PureComp extends PureComponent {
+  render() {
+    console.log("************ pureComp component render ******************");
+    return (
+      <div>Pure Component {this.props.name}</div>
+    )
+  }
+}
+
+export default PureComp;
 ```
 
-6. show how to add key attribute in 'React.Fragment' tags when rendering a List.
-Column.js
-```js 
-import React from "react";
+2. In the console area show only Regular component update render method and Pure component not.
 
-const Column = () => {
-  const items = ["s", "a", "m", "d"];
-  return (
-    <React.Fragment>
-      {items.map((item, index) => (
-        <React.Fragment key={index}> <td>{item}</td></React.Fragment>
-      ))}
-      <td>Samadhi</td>
-      <td>Laksahan</td>
-    </React.Fragment>
-  );
-};
-
-export default Column;
-```
-
-7. show instead of 'React.Fragment' we can use it's shorthand form of empty tag '<></>' and it's have one limitation that can't add 'key' prop. 
-Column.js
-```js 
-const Column = () => {
-  const items = ["s", "a", "m", "d"];
-  return (
-    <>
-      {items.map((item, index) => (
-        <React.Fragment key={index}> <td>{item}</td></React.Fragment>
-      ))}
-      <td>Samadhi</td>
-      <td>Laksahan</td>
-    </>
-  );
-};
-```
