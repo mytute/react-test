@@ -1,127 +1,288 @@
-#  Basics of Form Handling  
+# Lifecycle Methods
 
-form elements whose value is controlled by react is called a controlled components.   
+1. Mounting: when an instance of a component is being created and inserted into the DOM. 
+2. Updation: When a component is being re-rendered as a result of changes to either its props or state. 
+3. Unmounting: when a component is being removed from the DOM.  
+4. Error Handling: When there is an error during rendering, in lifecycle method, or in the constructor of any child component.  
 
-1. show how to control input text in the form tag using react state.    
-* create new class component call 'Form' and add 'label' and 'input' elements in it and show it is working as regular input on the browser.   
-* in component create new state call username and add input value to this state and show now your input values not update on input element on browser.   
-* in component add 'onChange' event to change state for input element and now show input values are update on the browser.    
+* Mounting  
+ 1. constructor
+ 2. static getDerivedStateFromProps
+ 3. render
+ 4. componentDidMount 
 
-Form.js   
-```js 
-import React, { Component } from "react";
+* Updation
+ 1. static getDerivedStateFromProps
+ 2. shouldComponentUpdate
+ 3. render
+ 4. getSnapshotBeforeUpdate
+ 5. componentDidUpdate
 
-class Form extends Component {
+
+* Unmounting
+ 1. componentWillUnmount   
+
+* Error Handling  
+ 1. static getDerivedStateFromError   
+ 2. componentDidCatch     
+
+### Mounting Lifecycle Methods.  
+
+> constructor(props)  
+ 1. A specail function that will get called whenever a new component is created.  
+ 2. Initializing state, Binding the events handlers. 
+ 3. Do not cause side effects. Ex: HTTP requests.  
+ 4. super(props) Directly overwrite this.state.   
+
+> static getDerivedStateFromProps(props, state)  
+ 1. When the state of the component depends on changes in props over time.  
+ 2. Set the state. 
+ 3. Do not cause side effects. Ex: HTTP requests.
+
+ > render()  
+ 1. Only required method in class components.  
+ 2. Read props & state and return JSX. 
+ 3. Do not change state or interact with DOM or make ajax calls.
+ 4. Children components lifecycle methods are also executed.
+
+  > componentDidMount()  
+ 1. Invoked immediately after a component and all its children components have been rendered to the DOM.  
+ 2. Cause side effects. Ex: Interact with the DOM or perform any ajax calls to load data.
+
+
+ 1. create class component call 'LifecycleA' and put the following console.log for see the order of executing. 
+LifecycleA.js
+ ```js 
+ import React, { Component } from "react";
+
+export class LifecycleA extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      username: "",
+      name: 'Samadhi'
     };
+    console.log('LifecycleA constructor ')
   }
-  handleUsernameChange = (event) => {
-    this.setState({ username: event.target.value });
-  };
+  static getDerivedStateFromProps(props, state){
+    console.log('LifecycleA getDerivedStateFromProps');
+    return null;
+  }
+  componentDidMount = () =>{
+    console.log('LifecycleA componentDidMount');
+  }
   render() {
+    console.log('LifecycleA render');
+    return <div>LifecycleA</div>;
+  }
+}
+
+export default LifecycleA;
+```
+
+2. create child class component call 'LifecycleB' to 'LifecycleA' component and do same thing what we did in 'LifecycleA' (console.logs) 
+
+LifecycleA.js
+ ```js 
+  render() {
+    console.log('LifecycleA render');
+    return <div> <LifecycleB/> </div>; // add here
+  }
+
+```
+
+
+LifecycleB.js
+ ```js 
+import React, { Component } from "react";
+
+export class LifecycleB extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: 'Samadhi'
+    };
+    console.log('LifecycleB constructor ')
+  }
+  static getDerivedStateFromProps(props, state){
+    console.log('LifecycleB getDerivedStateFromProps');
+    return null;
+  }
+  componentDidMount = () =>{
+    console.log('LifecycleB componentDidMount');
+  }
+  render() {
+    console.log('LifecycleB render');
+    return <div>LifecycleB</div>;
+  }
+}
+
+export default LifecycleB;
+```
+
+the order shoud be 
+LifecycleA constructor
+LifecycleA getDerivedStateFromProps
+LifecycleA render
+LifecycleB constructor
+LifecycleB getDerivedStateFromProps
+LifecycleB render
+LifecycleB componentDidMount
+LifecycleA render
+
+
+
+### Updating Lifecycle Methods.  
+
+
+ > static getDerivedStateFromProps
+  1. Method is called every time a component is re-rendered.  
+  2. Set the state. 
+  3. Do not cause side effects. Ex: HTTP requests.
+
+ > shouldComponentUpdate 
+  1. Dictates if the component should re-render or not.
+  2. basically for performance optimization. 
+  3. Do not cause side effects. Ex: HTTP requests.
+
+ > render
+  1. only required method.
+  2. Read props & state and return JSX.  
+  3. Do not change state or interact with DOM or make ajax calls.  
+
+ > getSnapshotBeforeUpdate  
+  1. Called right before the changes from the vitual DOM are to be refleted in the DOM.
+  2. Capture some information from the DOM Ex: scroll position.  
+  3. Method will either return null or return value. Returned value will be passed as the third parameter to the next method. 
+
+ > componentDidUpdate
+  1. Called after the render is finished in the re-render cycles.
+  2. Cause side effects Ex: ajax calls make after check is state change or not. 
+
+
+
+
+  3. add following three new methods to our previous example 'LifecycleA' component and 'LifecycleB' component. And for update component we add button click to parent component.      
+  * shouldComponentUpdate. 
+  * getSnapshotBeforeUpdate.
+  * componentDidUpdate.
+
+
+
+  LifecycleA.js
+ ```js 
+import React, { Component } from "react";
+import LifecycleB from './LifecycleB';
+
+export class LifecycleA extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: 'Samadhi'
+    };
+    console.log('LifecycleA constructor ')
+  }
+  static getDerivedStateFromProps(props, state){
+    console.log('LifecycleA getDerivedStateFromProps');
+    return null;
+  }
+  componentDidMount = () =>{
+    console.log('LifecycleA componentDidMount');
+  }
+  shouldComponentUpdate(){
+    console.log('LifecycleA shouldComponentUpdate');
+    return true;
+  }
+  getSnapshotBeforeUpdate(prevProps, prevState){
+    console.log('LifecycleA getSnapshotBeforeUpdate');
+    return null;
+  }
+  componentDidUpdate(){
+    console.log('LifecycleA componentDidUpdate');
+  }
+  changeState = () =>{
+    this.setState({name:'Laksahan'})
+  }
+  render() {
+    console.log('LifecycleA render');
     return (
-      <form>
         <div>
-          <label>Username</label>
-          <input
-            type="text"
-            value={this.state.username}
-            onChange={this.handleUsernameChange}
-          />
+            <div>LifecycleA</div>
+            <button onClick={changeState}>Change State</button>
+            <div> <LifecycleB/> </div>
         </div>
-      </form>
     );
   }
 }
 
-export default Form;   
+export default LifecycleA;
 ```
 
-2. show how to add textarea as control form in react.
-Form.js   
-```js 
+LifecycleB.js
+ ```js 
+import React, { Component } from "react";
+
+export class LifecycleB extends Component {
+  constructor(props) {
+    super(props);
 
     this.state = {
-      username: '',
-      comment: ''
+      name: 'Samadhi'
     };
-  
-
-  handleCommentChange = (event) => {
-    this.setState({ comment: event.target.value });
-  };
+    console.log('LifecycleB constructor ')
+  }
+  static getDerivedStateFromProps(props, state){
+    console.log('LifecycleB getDerivedStateFromProps');
+    return null;
+  }
+  componentDidMount = () =>{
+    console.log('LifecycleB componentDidMount');
+  }
+  shouldComponentUpdate(){
+    console.log('LifecycleB shouldComponentUpdate');
+    return true;
+  }
+  getSnapshotBeforeUpdate(prevProps, prevState){
+    console.log('LifecycleB getSnapshotBeforeUpdate');
+  }
+  componentDidUpdate(){
+    console.log('LifecycleB componentDidUpdate');
+  }
   render() {
-    return (
-      <form>
-        <div>
-          <label>Comment</label>
-          <textarea
-            value={this.state.comment}
-            onChange={this.handleCommentChange}
-          />
-        </div>
-      </form>
-    );
+    console.log('LifecycleB render');
+    return <div>LifecycleB</div>;
   }
-```
+}
 
-3. show how to add select element as control form in react.
-Form.js   
-```js 
+export default LifecycleB;
+```    
 
-    this.state = {
-      username: '',
-      comment: '',
-      topic:'react'
-    };
-  
-  handleTopicChange = (event) => {
-    this.setState({ topic: event.target.value });
-  };
+the order shoud be 
+LifecycleA getDerivedStateFromProps
+LifecycleA shouldComponentUpdate
+LifecycleA render
+LifecycleB getDerivedStateFromProps
+LifecycleB shouldComponentUpdate
+LifecycleB render
+LifecycleB getSnapshotBeforeUpdate
+LifecycleA getSnapshotBeforeUpdate
+LifecycleB componentDidUpdate
+LifecycleA componentDidUpdate
 
-  render() {
-    return (
-      <form>
-        <div>
-          <label>Topic</label>
-          <select value={this.state.topic} onChange={this.handleTopicChange}>
-             <option value="react">React</option>
-             <option value="angular">Angular</option>
-             <option value="view">View</option>
-          </select>
-        </div>
-      </form>
-    );
-  }
-```
 
-4. let's see how to submit form data.   
-* add 'onSubmit' event for form tag.  
-* add 'event.preventDefault()' function to 'handleSubmit' function not to refresh ater submit.
 
-Form.js   
-```js 
+### Unmounting Phase Methods.  
 
-    this.state = {
-      username: '',
-      comment: '',
-      topic:'react'
-    };
-  
-  handleSubmit = (event) =>{
-    console.log(this.state);
-    event.preventDefault();
-  }
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <button type="submit" >submit</button>
-      </form>
-    );
-  }
-```
+ > componentWillUnmount()
+  1. Method is invoked immediately before a component is unmounted and destroyed.  
+  2. Cancelling any network requests, removing event handlers, cancelling any subcriptions and also invelidating timers. 
+  3. Do not call the setState method. because not render happening after call this function.
+
+### Error Handling Phase Methods.(later will full tutorial)  
+ when there is an error either during rendering, in a lifecycle method on in the constructor of any child component.
+
+ > static getDerivedStateFromError(error)
+ > componentDidCatch(error, info)
