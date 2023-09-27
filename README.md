@@ -1,105 +1,209 @@
-# Pure Components   
+# Ref   
 
-There is a another way to create class component without 'React.Component'.
+access DOM node direcly in react.   
 
-Regular Component.   
-* A regular component does not implement the shouldComponentUpdate method. It always returns true by default.   
+1. create new class component call 'RefsDemo' in component folder and add input field to it and show focused input field when it loaded.    
 
+* create ref using 'React.createRef()'
+* attach ref to input element in the render method. 
+* add 'componentDidMount' lifecycle hook and console.log() 'ref' and see browser console and show it's 'current' property have actual dom property and find focus property.   
 
-Pure Component.   
-* A pure component on the other hand implements 'shuldComponentUpdate' with a shallow props and state comporison.   
-<img src="hello-world/public/comporison01.png" >
-<img src="hello-world/public/comporison02.png" >
-
-1. create class component call 'ParentComp' in component folder and make two children call 'PureComp' and 'RegComp' and put console.log for render function for both child. 
-* in 'Parent' component push state change function with timer.   
-
-ParentComp.js
-```js
+RefsDemo.js
+```js  
 import React, { Component } from 'react';
-import RegComp from './RegComp';
-import PureComp from './PureComp';
 
-class ParentComp extends Component {
+class RefsDemo extends Component {
     constructor(props) {
       super(props)
-    
-      this.state = {
-         name: 'Samadhi'
-      }
-      this.timer = null;
+
+      this.inputRef = React.createRef();
     }
     componentDidMount(){
-        this.timer = setInterval(()=>{
-          this.setState({name:'Laksahan'})
-        }, 2000)
-    }
-    componentWillUnmount(){
-      clearInterval(this.timer);
+        this.inputRef.current.focus();
+        console.log(this.inputRef);
     }
   render() {
-    console.log("************ parent component render ******************");
     return (
       <div>
-        <RegComp name={this.state.name}/>
-        <PureComp name={this.state.name}/>
+        <input type='test' ref={this.inputRef} />
       </div>
     )
   }
 }
 
-export default ParentComp;
+export default RefsDemo;
 ```
 
-RegComp.js 
-```js
-import React, { Component } from 'react';
+2. show how to fetch input values using ref. 
 
-class RegComp extends Component {
-
-  render() {
-    console.log("************ regComp component render ******************");
-    return (
-      <div>Regular Component {this.props.name}</div>
-    )
-  }
-}
-
-export default RegComp;
-```
-
-PureComp.js 
-```js
-import React, { PureComponent } from 'react';
-
-class PureComp extends PureComponent {
-  render() {
-    console.log("************ pureComp component render ******************");
-    return (
-      <div>Pure Component {this.props.name}</div>
-    )
-  }
-}
-
-export default PureComp;
-```
-
-2. In the console area show only Regular component update render method and Pure component not.
-
-3. show how to use memo as higher order function to achieve same behaviour as Pure Component.  
- * create new functional component call 'MemoComp' as child compoent of 'ParentComp'.    
-
-MemoComp.js
+RefsDemo.js
 ```js  
+    clickHandler (){
+        alert(this.inputRef.current.value);
+    }
+  render() {
+    return (
+      <div>
+        <input type='text' ref={this.inputRef} />
+        <button onClick={this.clickHandler}>Submit</button>
+      </div>
+    )
+  }
+```
+
+3. show how to handle old method like callback ref implement in same above example.
+
+* define cbRef and setCbref inside constructor function. 
+* firt need to check is 'this.cbRef' is null or not before make focus the element.
+* here we no need to access focus function via 'current' keyword.
+
+```js
+class RefsDemo extends Component {
+    constructor(props) {
+      super(props)
+
+      this.cbRef = null; // add
+      this.setCbRef = element => { // add
+        this.cbRef = element;
+      }
+    }
+    componentDidMount(){  
+        if(this.cbRef){ // add
+            this.cbRef.focus();
+        }
+    }
+
+  render() {
+    return (
+      <div>
+        <input type='text' ref={this.inputRef} />
+        <input type='text' ref={this.setCbRef} /> // add
+        <button onClick={this.clickHandler}>Submit</button>
+      </div>
+    )
+  }
+}
+
+export default RefsDemo;
+```
+
+### Ref to another class component 
+
+4. create new class component call 'Input.js' that child to 'FocusInput.js' component. Show how to focus  'Input.js' component input element from 'FocusInput.js' component using component ref.   
+
+* child should be attach to functional component. only class component.
+
+Input.js (child)
+```js 
+import React, { Component } from "react";
+
+class Input extends Component {
+  constructor(props) {
+    super(props);
+
+    this.inputRef = React.createRef();
+  }
+  focusInput() {
+    this.inputRef.current.focus();
+  }
+  render() {
+    return (
+      <div>
+        <input type="text" ref={this.inputRef} />
+      </div>
+    );
+  }
+}
+
+export default Input;
+```
+
+FocusInput.js (parent)
+```js 
+import React, { Component } from "react";
+import Input from "./Input";
+
+class FocusInput extends Component {
+  constructor(props) {
+    super(props);
+    this.componentRef = React.createRef();
+  }
+  clickHandler = () => {
+    this.componentRef.current.focusInput();
+  };
+  render() {
+    return (
+      <div>
+        <Input ref={this.componentRef} />
+        <button onClick={this.clickHandler}>Focus Input</button>
+      </div>
+    );
+  }
+}
+
+export default FocusInput;
+```
+
+### Forwarding Refs
+
+This is a tecnique for automatically passing a ref throught a component one of it's children.
+
+5. show how to implement forwording ref in functional component.   
+
+* create new functional component call 'FRInput.js' and add input element.
+* create new class component call 'FRParentInput.js' add 'FRInput' component as child and button .
+* in 'FRInput' child component wrap normal component with 'React.forwordRef' function and show it comes with second argument with 'ref' that can add to input element in 'FRinput' component.
+
+normally props pass in to 
+
+FRParentInput.js (parent)
+```js  
+import React, { Component } from 'react';
+import FRInput from './FRInput';
+
+class FRParentInput extends Component {
+    constructor(props) {
+      super(props)
+    
+      this.inputRef = React.createRef()
+    }
+    handleClick = ()=>{
+        this.inputRef.current.focus();
+    }
+  render() {
+    return (
+      <div>
+        <FRInput ref={this.inputRef}/>
+        <button onClick={this.handleClick}>Focus Input</button>
+      </div>
+    )
+  }
+}
+
+export default FRParentInput;
+```
+
+FRInput.js (child)
+```js
 import React from 'react';
 
-const MemoComp = ({name}) => {
-  console.log("************ memo component render ******************");
-  return (
-    <div>{name}</div>
-  )
-}
+// const FRInput = () => {
+//   return (
+//     <div>
+//         <input type='text'/>
+//     </div>
+//   )
+// }
 
-export default React.memo(MemoComp);
-// export default MemoComp;
+
+const FRInput = React.forwardRef((props, ref) => {
+
+    return (
+      <div>
+          <input type='text' ref={ref}/>
+      </div>
+    )
+  })
+
+export default FRInput;
 ```
