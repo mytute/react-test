@@ -47,9 +47,10 @@
 
   > componentDidMount()  
  1. Invoked immediately after a component and all its children components have been rendered to the DOM.  
- 2. Cause side effects. Ex: Interact with the DOM or perform any ajax calls to load data.
+ 2. Cause side effects. Ex: Interact with the DOM or perform any ajax calls to load data.      
 
 
+---- 
  1. create class component call 'LifecycleA' and put the following console.log for see the order of executing. 
 LifecycleA.js
  ```js 
@@ -129,7 +130,7 @@ LifecycleB constructor
 LifecycleB getDerivedStateFromProps
 LifecycleB render
 LifecycleB componentDidMount
-LifecycleA render
+LifecycleA componentDidMount
 
 
 
