@@ -1,220 +1,145 @@
-#  Render Props (pattern)  
+#  Context  
 
-The term 'render prop' refer to a technique for sharing code between React components using a props whose value is a function.   
+Context provides a way to pass data through the component tree without having to pass props down manually at every level.  
 
-1. create two class components call 'HoverCounter.js' and 'ClickCounter.js' and implement increment counter when hover and click.   
+!!! important 
+only decending component can consume the context values.  
 
-HoverCounter.js    
+steps   
+1. create the context.    
+2. Provide a context vlue.   
+3. Consume the context value.   
+
+
+1. create class component that nested by following order.   
+App > ComponentC > ComponentE > ComponentF   
+
+2. create new file call 'userContext.js' and show how to create UserContext.    
+
+userContext.js     
 ```js
-import React, { Component } from "react";
+import React from "react";
 
-class HoverCounter extends Component {
-  constructor(props) {
-    super(props);
+const UserContext = React.createContext();
 
-    this.state = {
-      count: 0,
-    };
-  }
+const UserProvider = UserContext.Provider;
+const UserConsumer = UserContext.Consumer;
 
-  incrementCount = () => {
-    this.setState((prevState) => ({ count: prevState.count + 1 }));
-  };
-  render() {
-    const { count } = this.state;
-    return (
-      <div>
-        <h1 onMouseOver={this.incrementCount}>Hover {count} times</h1>
-      </div>
-    );
-  }
-}
-
-export default HoverCounter;
+export { UserProvider, UserConsumer };
 ```
 
-ClickCounter.js   
-```js
-import React, { Component } from "react";
+3. add user provider on the 'App.js' file by wraping the 'ComponentC' because only decending component can consume the context values. And pass the value on 'UserProvider' tag.  
 
-class ClickCounter extends Component {
-  constructor(props) {
-    super(props);
+App.js    
+```js 
+import "./App.css";
+import ComponentC from "./components/ComponentC";
+import { UserProvider } from "./components/userContext";
 
-    this.state = {
-      count: 0,
-    };
-  }
-
-  incrementCount = () => {
-    this.setState((prevState) => ({ count: prevState.count + 1 }));
-  };
-  render() {
-    const { count } = this.state;
-    return (
-      <div>
-        <button onClick={this.incrementCount}>Click {count} times</button>
-      </div>
-    );
-  }
-}
-
-export default ClickCounter;
-```
-
-2. as a baby step create class component call 'User' and instead of passing 'name' props from the parent(App.js) pass the function that return name value and you can add some arguments also.    
-
-User.js    
-```js
-import React, { Component } from "react";
-
-class User extends Component {
-  render() {
-    const isLogged = true;
-    return (
-      //   <div>{this.props.name}</div>
-      <div>{this.props.name(isLogged)}</div>
-    );
-  }
-}
-
-export default User;
-```
-
-App.js   
-```js
+function App() {
   return (
     <div>
-      <ClickCounter/>
-      <HoverCounter/>
-      <User name={(isLogged)=> isLogged ? 'Samadhi' : 'Gust'} /> // add here
+      <UserProvider  value="Samadhi"> // add value here
+        <ComponentC  />
+      </UserProvider>
     </div>
   );
+}
 
+export default App;
 ```
 
-3. show how to use common increment functionality.  
+4. show how to consume 'App.js' passing value from 'ComponentF.js'   
 
-* create new class component call 'Counter.js' 
+```js 
+import React, { Component } from 'react';
+import { UserConsumer } from './userContext';
+
+export class ComponentF extends Component {
+  render() {
+    return (
+      <UserConsumer>
+        {
+          (username)=>{
+            return  <div>Hello {username}</div>
+          }
+        }
+      </UserConsumer>
+    )
+  }
+}
+
+export default ComponentF;
+```
+
+5. show how to set default value to your user context value while creating the context. And remove 'UserProvider' wrapper in 'App.js' to see the reuslt.    
+
+userContext.js
+```js
+import React from "react";
+
+const UserContext = React.createContext('Laksahan'); // add detault value here
+
+const UserProvider = UserContext.Provider;
+const UserConsumer = UserContext.Consumer;
+
+export { UserProvider, UserConsumer };
+```
 
 App.js   
 ```js
 import "./App.css";
-import ClickCounter from "./components/ClickCounter";
-import HoverCounter from "./components/HoverCounter";
-import Counter from "./components/Counter";
+import ComponentC from "./components/ComponentC";
+import { UserProvider } from "./components/userContext";
 
 function App() {
   return (
-    <div>
-      <Counter
-        render={(count, incrementCount) => (
-          <ClickCounter count={count} incrementCount={incrementCount} />
-        )}
-      />
-      <Counter
-        render={(count, incrementCount) => (
-          <HoverCounter count={count} incrementCount={incrementCount} />
-        )}
-      />
+    <div> // remove here
+        <ComponentC  />
     </div>
   );
 }
+
 export default App;
-
 ```
 
-Counter.js  
+7. show how to consume context value using 'contextType'.    
+
+for that we need to export 'UserContext' from 'userContext'   
+userContext.js
 ```js
-import React, { Component } from "react";
+import React from "react";
 
-class Counter extends Component {
-  constructor(props) {
-    super(props);
+const UserContext = React.createContext();
 
-    this.state = {
-      count: 0,
-    };
-  }
+const UserProvider = UserContext.Provider;
+const UserConsumer = UserContext.Consumer;
 
-  incrementCount = () => {
-    this.setState((prevState) => ({ count: prevState.count + 1 }));
-  };
-  render() {
-    return <div>{this.props.render(this.state.count, this.incrementCount)}</div>;
-  }
-}
-
-export default Counter;
+export { UserProvider, UserConsumer };
+export default UserContext; // add here
 ```
 
-ClickCounter.js    
+* for this we consule context value from 'ComponentE.js'
+
+ComponentE.js
 ```js
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import ComponentF from './ComponentF';
+import UserContext from './userContext';
 
-class ClickCounter extends Component {
-
+class ComponentE extends Component {
+   // static contextType = UserContext;
   render() {
-    const { count, incrementCount } = this.props; // state > props
     return (
       <div>
-        <button onClick={incrementCount}>Click {count} times</button>
+        <div>Component E context {this.context}</div>
+        <ComponentF/>
       </div>
-    );
+    )
   }
 }
 
-export default ClickCounter;
+ComponentE.contextType = UserContext; // add here
+
+export default ComponentE;
 ```
-
-HoverCounter.js    
-```js
-import React, { Component } from "react";
-
-class HoverCounter extends Component {
-
-  render() {
-    const { count, incrementCount } = this.props; // state > props
-    return (
-      <div>
-        <h1 onMouseOver={incrementCount}>Hover {count} times</h1>
-      </div>
-    );
-  }
-}
-
-export default HoverCounter;
-```
-
-
-4. In same example show how to pass props to 'Counter.js' as child props.   
-
-App.js     
-```js
-function App() {
-  return (
-    <div>
-      <Counter>
-        {(count, incrementCount) => (
-          <ClickCounter count={count} incrementCount={incrementCount} />
-        )}
-      </Counter>
-      <Counter>
-        {(count, incrementCount) => (
-          <HoverCounter count={count} incrementCount={incrementCount} />
-        )}
-      </Counter>
-    </div>
-  );
-}
-```
-
-Counter.js   
-```js
-  // change this.props.render() to this.props.children
-  render() {
-    return <div>{this.props.children(this.state.count, this.incrementCount)}</div>;
-  }
-```
-
-
