@@ -1,14 +1,13 @@
 import "./App.css";
-import HookCounter from "./components/HookCounter";
-import User from "./components/User";
-import Items from "./components/Items";
+import ComponentC from "./components/ComponentC";
+import { UserProvider } from "./components/userContext";
 
 function App() {
   return (
     <div>
-       {/* <HookCounter/> */}
-       {/* <User/> */}
-       <Items/>
+      <UserProvider  value="Samadhi">
+        <ComponentC  />
+      </UserProvider>
     </div>
   );
 }
