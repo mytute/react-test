@@ -1,145 +1,136 @@
-#  Context  
+#  useState Hook   
 
-Context provides a way to pass data through the component tree without having to pass props down manually at every level.  
+What/Why are Hooks ? 
+* Hooks are react feature from version 16.8 maintain state in component.    
+* no need to understand how this keyword works in javascript
+* no need to bund event handlers in component.
+* can reuse state without restructure code (wthout HOC and Render Props).
+* no need to call in multiple lifecycle methods(componentDidMount, componentDidUpdate) for one task like data feching.
 
-!!! important 
-only decending component can consume the context values.  
+### Rules on Hooks   
+* only call Hooks at the Top Level   
+* Only call Hooks from React Fucntions
 
-steps   
-1. create the context.    
-2. Provide a context vlue.   
-3. Consume the context value.   
+1. create new fucntional component call 'HookCounter.js' in component folder and implement counter component with 'useState' hook.   
+* use 'setCount(count+1)'
 
+HookCounter.js   
+```jsx
+import React, {useState} from 'react';
 
-1. create class component that nested by following order.   
-App > ComponentC > ComponentE > ComponentF   
+const HookCounter = () => {
+  const [count, setCount] = useState(0);
+  const handleClick = ()=>{
+    setCount( count +1 )
+  }
+  return( <div>
+    
+    <button onClick={handleClick}>Click {count}</button>
+  </div>);
+};
 
-2. create new file call 'userContext.js' and show how to create UserContext.    
-
-userContext.js     
-```js
-import React from "react";
-
-const UserContext = React.createContext();
-
-const UserProvider = UserContext.Provider;
-const UserConsumer = UserContext.Consumer;
-
-export { UserProvider, UserConsumer };
+export default HookCounter;
 ```
 
-3. add user provider on the 'App.js' file by wraping the 'ComponentC' because only decending component can consume the context values. And pass the value on 'UserProvider' tag.  
+2. in above example in 'handleClick' function dublicate 'setCount(count+1)' 2 times and show only increment 1 time. for fix that add other form of 'useState' hook that with previous value.
 
-App.js    
-```js 
-import "./App.css";
-import ComponentC from "./components/ComponentC";
-import { UserProvider } from "./components/userContext";
+if new state value depends on the previous state value then you can pass a funtion to the setter function.
 
-function App() {
+HookCounter.js   
+```jsx
+import React, { useState } from "react";
+
+const HookCounter = () => {
+  const [count, setCount] = useState(0);
+  const handleClick = () => {
+    // setCount(count + 1);
+    // setCount(count + 1);
+    setCount(prevCount=> prevCount+1); // with previous state
+    setCount(prevCount=> prevCount+1); // with previous state
+
+  };
   return (
     <div>
-      <UserProvider  value="Samadhi"> // add value here
-        <ComponentC  />
-      </UserProvider>
+      <div>{count}</div>
+      <button onClick={handleClick}>Click {count}</button>
     </div>
   );
-}
+};
 
-export default App;
+export default HookCounter;
 ```
 
-4. show how to consume 'App.js' passing value from 'ComponentF.js'   
+### useState with object    
 
-```js 
-import React, { Component } from 'react';
-import { UserConsumer } from './userContext';
+3. create functional component call 'User.js' inside component folder and make two input fields for user 'firstName' and 'lastName'. And dispaly values in using 'div' tags on browser.  And show how to use spread operators(overrite object) in 'setName' function when update the name.
 
-export class ComponentF extends Component {
-  render() {
-    return (
-      <UserConsumer>
-        {
-          (username)=>{
-            return  <div>Hello {username}</div>
-          }
-        }
-      </UserConsumer>
-    )
-  }
-}
+* spread operator do merge object here.
 
-export default ComponentF;
-```
+User.js
+```jsx
+import React, { useState } from "react";
 
-5. show how to set default value to your user context value while creating the context. And remove 'UserProvider' wrapper in 'App.js' to see the reuslt.    
-
-userContext.js
-```js
-import React from "react";
-
-const UserContext = React.createContext('Laksahan'); // add detault value here
-
-const UserProvider = UserContext.Provider;
-const UserConsumer = UserContext.Consumer;
-
-export { UserProvider, UserConsumer };
-```
-
-App.js   
-```js
-import "./App.css";
-import ComponentC from "./components/ComponentC";
-import { UserProvider } from "./components/userContext";
-
-function App() {
+const User = () => {
+  const [name, setName] = useState({ firstName: "", lastName: "" });
   return (
-    <div> // remove here
-        <ComponentC  />
+    <form>
+      <input
+        type="text"
+        value={name.firstName}
+        onChange={(event) => {
+          setName({ ...name, firstName: event.target.value });
+        }}
+      />
+      <input
+        type="text"
+        value={name.lastName}
+        onChange={(event) => {
+          setName({ ...name, lastName: event.target.value });
+        }}
+      />
+
+      <h2>Your first name is - {name.firstName}</h2>
+      <h2>Your last name is - {name.lastName}</h2>
+      <h2>{JSON.stringify(name, null, 2)}</h2>
+    </form>
+  );
+};
+
+export default User;
+```
+
+### useState with array
+
+4. create functional component call 'Item.js' inside component folder and make add random numbers when click 'Add a number' button. And dispaly values as a list using 'ul/li' tags on browser.  And show how to use spread operators(overrite array) in 'setItem' function when add the number.    
+
+Item.js   
+```jsx
+import React, { useState } from "react";
+
+const Items = () => {
+  const [item, setItem] = useState([]);
+  const addItem = () => {
+    setItem([
+      ...item,
+      {
+        id: item.length,
+        value: Math.floor(Math.random() * 10) + 1,
+      }
+    ]);
+  };
+  return (
+    <div>
+      <button onClick={addItem}>Add a Number</button>
+      <ul>
+        {item.map((item) => (
+           <li key={item.id}>{item.value}</li>
+        ))}
+      </ul>
+      <div>{JSON.stringify(item, null, 2)}</div>
     </div>
   );
-}
+};
 
-export default App;
+export default Items;
 ```
 
-7. show how to consume context value using 'contextType'.    
-
-for that we need to export 'UserContext' from 'userContext'   
-userContext.js
-```js
-import React from "react";
-
-const UserContext = React.createContext();
-
-const UserProvider = UserContext.Provider;
-const UserConsumer = UserContext.Consumer;
-
-export { UserProvider, UserConsumer };
-export default UserContext; // add here
-```
-
-* for this we consule context value from 'ComponentE.js'
-
-ComponentE.js
-```js
-import React, { Component } from 'react';
-import ComponentF from './ComponentF';
-import UserContext from './userContext';
-
-class ComponentE extends Component {
-   // static contextType = UserContext;
-  render() {
-    return (
-      <div>
-        <div>Component E context {this.context}</div>
-        <ComponentF/>
-      </div>
-    )
-  }
-}
-
-ComponentE.contextType = UserContext; // add here
-
-export default ComponentE;
-```
