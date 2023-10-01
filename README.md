@@ -204,3 +204,117 @@ const IntervalHookCounter = () => {
 
 export default IntervalHookCounter;
 ```
+
+8. show that you can use multiple 'useEffect' hooks in same component.  
+
+### Fetching data with useEffect
+
+9. first install 'axios' for data fetching.  
+
+```bash
+$ npm install axios
+```
+
+10. create functional component call 'DataFetching.js' in component folder and show how to call api 'GET' call using 'axios' and show if use 'useEffect(()=>{})' without second parameter is getting infinity api call and with 'useEffect(()=>{},[])' empty array second parameter only call api onese.    
+
+```jsx
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+
+const DataFetching = () => {
+    const [posts, setPosts] = useState([]);
+    useEffect(()=>{
+        axios.get('https://jsonplaceholder.typicode.com/posts')
+        .then(res=>{
+            console.log('res: ',res)
+            setPosts(res.data);
+        })
+        .catch(error=>{
+            console.log('error:', error)
+        })
+        console.log("useEffect calls")
+    },[]);
+  return (
+    <div>
+        <ul>
+            {posts.map(post=><li key={post.id}>{post.body}</li>)}
+        </ul>
+    </div>
+  )
+}
+
+export default DataFetching;
+```
+
+###  Fetching data with useEffect  
+
+11. in the same 'DataFetching' chage the code and show how to fetch single post.   
+
+* add new state for store 'id'. (post id)    
+* change 'posts' state to 'post' state.     
+* add input field to update and call the api and update the post.   
+* remove 'posts.map' in jsx to show single post.    
+
+```jsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const DataFetching = () => {
+  const [post, setPost] = useState([]);
+  const [id, setId] = useState(1);
+  useEffect(() => {
+    axios
+      .get(`https://jsonplaceholder.typicode.com/posts/${id}`)
+      .then((res) => {
+        console.log("res: ", res);
+        setPost(res.data);
+      })
+      .catch((error) => {
+        console.log("error:", error);
+      });
+    console.log("useEffect calls");
+  }, [id]);
+  return (
+    <div>
+      <input
+        type="text"
+        value={id}
+        onChange={(event) => {
+          setId(event.target.value);
+        }}
+      />
+      <p key={post.id}>{post.body}</p>
+    </div>
+  );
+};
+
+export default DataFetching;
+```
+
+12. show how to improve above code with go api call for no 'id' value.   
+
+* here you can add button to call api.    
+```jsx
+const DataFetching = () => {
+  const [post, setPost] = useState([]);
+  const [id, setId] = useState(1);
+  const [buttonClick, setButtonClick] = useState(1); // add here
+
+  useEffect(() => {
+    // .....
+  }, [buttonClick]);
+  return (
+    <div>
+      <input
+        type="text"
+        value={id}
+        onChange={(event) => {
+          setId(event.target.value);
+        }}
+      />
+      <button onClick={()=>{setButtonClick(id)}} >Fech data</button>
+      <p key={post.id}>{post.body}</p>
+    </div>
+  );
+};
+```  
