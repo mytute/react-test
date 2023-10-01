@@ -1,145 +1,206 @@
-#  Context  
+#  useEffect Hook  
 
-Context provides a way to pass data through the component tree without having to pass props down manually at every level.  
+The Effect Hook lets you perform side effects in functional components.
 
-!!! important 
-only decending component can consume the context values.  
+using 'useEffect' following 3 lifecycle method operation can execute in one hook. 
 
-steps   
-1. create the context.    
-2. Provide a context vlue.   
-3. Consume the context value.   
-
-
-1. create class component that nested by following order.   
-App > ComponentC > ComponentE > ComponentF   
-
-2. create new file call 'userContext.js' and show how to create UserContext.    
-
-userContext.js     
 ```js
-import React from "react";
+componentDidMount(){
+    document.title = `You clicked ${this.state.count} times`;
+    this.interval = setInterval(this.tick, 1000);
+}
 
-const UserContext = React.createContext();
+componentDidUpdate(){
+    document.title = `You clicked ${this.state.count} times`;
+}
 
-const UserProvider = UserContext.Provider;
-const UserConsumer = UserContext.Consumer;
-
-export { UserProvider, UserConsumer };
+componentWillUnmount(){
+    clearInterval(this.interval)
+}
 ```
 
-3. add user provider on the 'App.js' file by wraping the 'ComponentC' because only decending component can consume the context values. And pass the value on 'UserProvider' tag.  
+It is a close replacement for 'componentDidMount', 'componentDidUpdate' and 'componentWillUnmount'.
 
-App.js    
-```js 
-import "./App.css";
-import ComponentC from "./components/ComponentC";
-import { UserProvider } from "./components/userContext";
+###  useEffect after render
 
-function App() {
+1. create new functional component call 'CounterHook.js' and impliment counter increment when click the button on the button and browser title.   
+
+* becuae of 'setCount' async we can't put update title inside 'handleIncrement' function.
+
+* in following code for every update of the component execute the 'useEffect' function.   
+
+```js
+import React, { useState, useEffect } from "react";
+
+const HookCounter = () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(()=>{
+    document.title = `Click ${count} times`;
+  });
+
+  const handleIncrement = () => {
+    setCount((prevCount) => prevCount + 1);
+    // becuae of 'setCount' async we can't put update title here.
+  };
   return (
     <div>
-      <UserProvider  value="Samadhi"> // add value here
-        <ComponentC  />
-      </UserProvider>
+      <button onClick={handleIncrement}>Click {count} times</button>
     </div>
   );
-}
+};
 
-export default App;
+export default HookCounter;
 ```
 
-4. show how to consume 'App.js' passing value from 'ComponentF.js'   
+###  Conditionally run effects  
 
-```js 
-import React, { Component } from 'react';
-import { UserConsumer } from './userContext';
+2. Add input element and state for 'name' and  console.log to 'useEffect' function. show every input of key press 'useEffect' function is executing which is not good.  
 
-export class ComponentF extends Component {
-  render() {
-    return (
-      <UserConsumer>
-        {
-          (username)=>{
-            return  <div>Hello {username}</div>
-          }
-        }
-      </UserConsumer>
-    )
-  }
-}
-
-export default ComponentF;
-```
-
-5. show how to set default value to your user context value while creating the context. And remove 'UserProvider' wrapper in 'App.js' to see the reuslt.    
-
-userContext.js
 ```js
-import React from "react";
+const HookCounter = () => {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState("");
 
-const UserContext = React.createContext('Laksahan'); // add detault value here
+  useEffect(() => {
+    document.title = `Click ${count} times`;
+    console.log('update title count'); // console.log ****
+  });
 
-const UserProvider = UserContext.Provider;
-const UserConsumer = UserContext.Consumer;
-
-export { UserProvider, UserConsumer };
-```
-
-App.js   
-```js
-import "./App.css";
-import ComponentC from "./components/ComponentC";
-import { UserProvider } from "./components/userContext";
-
-function App() {
+  const handleIncrement = () => {
+    setCount((prevCount) => prevCount + 1);
+  };
   return (
-    <div> // remove here
-        <ComponentC  />
+    <div>
+      <input
+        type="text"
+        value={name}
+        onChange={(event) => {
+          setName(event.target.value);
+        }}
+      />
+      <button onClick={handleIncrement}>Click {count} times</button>
     </div>
   );
-}
-
-export default App;
+};
 ```
 
-7. show how to consume context value using 'contextType'.    
-
-for that we need to export 'UserContext' from 'userContext'   
-userContext.js
+3. To update 'title' only 'count' change, add second parameter to the 'useEffect' of any depending state or props as array     
+HookCounter.js   
 ```js
-import React from "react";
+  useEffect(() => {
+    document.title = `Click ${count} times`;
+    console.log('update title count'); // console.log ****
+  },[count]);
+``` 
 
-const UserContext = React.createContext();
+4. show how to make execute 'useEffect' function only once.   
+* create functional component call 'HookMouse.js' and listen browser window mouse event X,Y coordinate and show them on browser.    
 
-const UserProvider = UserContext.Provider;
-const UserConsumer = UserContext.Consumer;
+* add empty array as second parameter to useEffect hook for execute only onese in the component.    
 
-export { UserProvider, UserConsumer };
-export default UserContext; // add here
+```jsx
+import React, { useEffect, useState } from "react";
+
+const HookMouse = () => {
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", logMousePosition);
+  }, []);
+
+  const logMousePosition = (event) => {
+    console.log("Mouse event");
+    setX(event.clientX);
+    setY(event.clientY);
+  };
+
+  return (
+    <div>
+      <h2>{`Mouse X: ${x}, Y: ${y}`}</h2>
+    </div>
+  );
+};
+
+export default HookMouse;
 ```
 
-* for this we consule context value from 'ComponentE.js'
+### useEffect with cleanup   
 
-ComponentE.js
+5. create new functional component call 'MouseContainer.js' and make above 'HookMouse.js' component child of it and add toggle button for 'MouseContainer.js' component for dispaly and hide 'HookMouse.js' component. 
+
+show even 'HookMouse.js' component removed but console.log in 'HookMouse.js' component stil priting when mouse is moving on the browser canvas.   
+
+
+MouseContainer.js
+```jsx
+import React, { useState } from "react";
+import HookMouse from "./HookMouse";
+
+const MouseContainer = () => {
+  const [display, setDisplay] = useState(false);
+  return (
+    <div>
+      <button
+        onClick={() => {
+          setDisplay(!display);
+        }}
+      >
+        Show/Hide
+      </button>
+      {display && <HookMouse />}
+    </div>
+  );
+};
+
+export default MouseContainer;
+```
+
+6. show how to clean event listener in 'HookMouse.js' component when it removed from 'MouseContainer.js' component.   
+
+* you can return anonymise function inside which list of what you want to clear
+
+HookMouse.js
+```jsx
+  useEffect(() => {
+    window.addEventListener("mousemove", logMousePosition);
+    return ()=>{ // add here
+        window.removeEventListener("mousemove", logMousePosition);
+    }
+  }, []);
+```
+
+### useEffect with incorrect dependency   
+
+7. create functinal component call 'IntervalHookCounter' and by implementing interval count incrementing show when we are using 'setCount((prevCount) => prevCount + 1)' form of useState can't use 'count' in dependency array in 'useEffect' but when we are using 'setCount(count + 1);' form of 'useState' then you should use 'count' in dependency array. 
+
 ```js
-import React, { Component } from 'react';
-import ComponentF from './ComponentF';
-import UserContext from './userContext';
+import React, { useEffect, useState } from "react";
 
-class ComponentE extends Component {
-   // static contextType = UserContext;
-  render() {
-    return (
-      <div>
-        <div>Component E context {this.context}</div>
-        <ComponentF/>
-      </div>
-    )
+const IntervalHookCounter = () => {
+  const [count, setCount] = useState(0);
+
+  const tick = ()=>{
+    console.log("interval", count);
+    setCount((prevCount) => prevCount + 1);
+    // setCount(count + 1);
   }
-}
 
-ComponentE.contextType = UserContext; // add here
+  useEffect(() => {
+    const interval = setInterval(tick, 1000); // add interval here
 
-export default ComponentE;
+    return () => { //clear timer
+      clearInterval(interval);
+    };
+  },[]); // },[count]);
+
+  return (
+  <div>
+    <div>Count: {count} </div>
+  </div>
+  );
+};
+
+export default IntervalHookCounter;
 ```
