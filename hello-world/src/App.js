@@ -1,7 +1,7 @@
 import './App.css';
-import FunctionClick from './components/FunctionClick';
-import ClassClick from './components/ClassClick';
-import EvenBind from './components/EvenBind';
+// import FunctionClick from './components/FunctionClick';
+// import ClassClick from './components/ClassClick';
+// import EvenBind from './components/EvenBind';
 
 function App() {
   return (
