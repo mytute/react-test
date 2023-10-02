@@ -1,115 +1,54 @@
-#  useContext   
+#  useReducer   
 
-Context provides a way to pass data through the component tree without having to pass props down manually at every level.   
+* useReducer is a hook that is used for state management.    
+* It is an alternative to useState. 
+* useState is built using useReducer.   
 
-1. create following list of component with parent-child relationshiop(done).   
-App.js > ComponentC.js > ComponentE.js > ComponentF.js     
+* javascript reducer vs react useReducer    
+```js
+$ array.reduce(reducer, initailValue) > userReducer(reducer, intialState);
+$ singleValue = reducer(accumulator, itemValue) > newState = reducer(currentState, action);   
+$ reduce method returns a single value > useReducer returns a pair of values [newState, dispatch]  
+```
 
-2. show how to create two context api call 'user' and 'channel' without using useContext.   
+1. create new functional component call 'Counter.js' in component folder and show how to implement count increment, decrement and reset functions with 'useReducer' hook.   
 
-App.js   
-```jsx
-import "./App.css";
-import React from "react";
-import ComponentC from "./components/ComponentC";
+* here usually 'initialState' and 'reducer' put outside of the component.    
 
-export const UserContext = React.createContext();
-export const ChannelContext = React.createContext();
+```js 
+import React, { useReducer } from 'react'
 
-function App() {
-  return (
-    <div>
-      <UserContext.Provider value="Samadhi">
-        <ChannelContext.Provider value="Laksahan">
-          <ComponentC />
-        </ChannelContext.Provider>
-      </UserContext.Provider>
-    </div>
-  );
+const initialState = 0;
+const reducer = (state, action) =>{
+    switch(action){
+      case 'increment':
+        return state +1 ;
+      case 'decrement':
+        return state -1;
+      case 'reset':
+        return initialState;
+      default:
+        return state;
+    }
 }
 
-export default App;
-```
-ComponentC.js
-```jsx
-import React from "react";
-import ComponentE from "./ComponentE";
-
-const ComponentC = () => {
+const Counter = () => {
+  const [count, dispatch] = useReducer(reducer, initialState)
   return (
     <div>
-      <ComponentE />
+        <h2>Count : {count}</h2>
+        <button onClick={()=>{dispatch('increment')}}>Increment</button>
+        <button onClick={()=>{dispatch('decrement')}}>Decrement</button>
+        <button onClick={()=>{dispatch('reset')}}>Reset</button>
     </div>
-  );
-};
+  )
+}
 
-export default ComponentC;
-```
-ComponentE.js
-```jsx
-import React from "react";
-import ComponentF from "./ComponentF";
-
-const ComponentE = () => {
-  return (
-    <div>
-      <ComponentF />
-    </div>
-  );
-};
-
-export default ComponentE;
-
-```
-ComponentF.js
-```jsx
-import React from "react";
-import { UserContext, ChannelContext } from "../App";
-
-const ComponentF = () => {
-  return (
-    <UserContext.Consumer>
-        {
-            (user)=>{
-                return (
-                    <ChannelContext.Consumer>
-                        {(channel)=>{
-                            return <div> user : {user} | channel : {channel}</div>
-                        }}
-                    </ChannelContext.Consumer>
-                )
-            }
-        }
-    </UserContext.Consumer>
-  );
-};
-
-export default ComponentF;
+export default Counter;
 ```
 
-3. show how to simplefy context consumer using 'useContext' hook.    
+2. In above example add another counter with same 'useReducer' hook and make differant steps to increment.      
 
-```jsx
-import React, { useContext } from "react";
-import ComponentF from "./ComponentF";
-import { UserContext, ChannelContext } from "../App";
-
-const ComponentE = () => {
-  const user = useContext(UserContext);
-  const channel = useContext(ChannelContext);
-  return (
-    <div>
-      <div>
-        ComponentE user: {user} | channel: {channel}
-      </div>
-      <ComponentF />
-    </div>
-  );
-};
-
-export default ComponentE;
-```
-
-
-
+* we have to convert 'reducer' 'action' type string to object for send dispatch name and other data.    
+ex: action = {type:'increment', value: 5}
 

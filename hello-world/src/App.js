@@ -1,11 +1,12 @@
 import "./App.css";
-import React from "react";
 import ComponentC from "./components/ComponentC";
+import Counter from "./components/Counter";
 
 function App() {
   return (
     <div>
       <ComponentC />
+      <Counter/>
     </div>
   );
 }
