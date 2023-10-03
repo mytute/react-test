@@ -139,4 +139,209 @@ const Counter = () => {
 }
 
 export default Counter;
+```    
+
+### useReducer with useContext
+
+userReducer for Local State management.    
+Share state between components- Global state management useReducer + useContext.  
+
+4. show how to use useReducer with useContext for global.
+* create following folder structure.  
+    App
+      > ComponentA
+      > ComponentB
+      > ComponentC > > ComponentE > ComponentF
+  
+* implement context and counter functionality in 'App.js' component and call counter functionality from 'ComponentF'.  
+
+App.js
+```jsx
+import "./App.css";
+import ComponentA from "./components/ComponentA";
+import ComponentB from "./components/ComponentB";
+import ComponentC from "./components/ComponentC";
+import Counter from "./components/Counter";
+import React, { useReducer } from "react";
+
+
+const initailValue = 0;
+const reducer = (state, action)=>{
+    switch(action){
+      case 'increment':
+        return state+1;
+      case 'decrement':
+        return state-1;
+      case 'reset':
+        return initailValue;
+      default:
+        return state;
+    }
+}
+export const CountContext = React.createContext();
+
+function App() {
+  const [count, dispatch] = useReducer(reducer, initailValue)
+  return (
+    <div>
+      {/* <ComponentC />
+      <Counter/> */}
+      {count}
+      <button onClick={()=>dispatch('increment')}>Increment</button>
+        <button onClick={()=>dispatch('decrement')}>Decrement</button>
+        <button onClick={()=>dispatch('reset')}>Reset</button>
+      <CountContext.Provider value={{countState:count, countDispatch: dispatch}}>
+        <ComponentA/>
+        <ComponentB/>
+        <ComponentC/>
+      </CountContext.Provider>
+    </div>
+  );
+}
+
+export default App;
 ```
+
+ComponentF.js   
+```js  
+import React from "react";
+import { CountContext } from "../App";
+
+const ComponentF = () => {
+  const countContext = React.useContext(CountContext);
+  return (
+    <div style={{border:'1px solid red'}}>
+      <div>ComponentF</div>
+      <div>
+        <button onClick={()=>countContext.countDispatch('increment')}>Increment</button>
+        <button onClick={()=>countContext.countDispatch('decrement')}>Decrement</button>
+        <button onClick={()=>countContext.countDispatch('reset')}>Reset</button>
+      </div>
+    </div>
+  );
+};
+
+export default ComponentF;
+``` 
+
+5. show how to change following 'useState' api handling in to 'useReducer' .    
+
+DateFetching.js with useState
+```jsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const DateFetching = () => {
+  const [post, setPost] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("https://jsonplaceholder.typicode.com/posts/1")
+      .then((response) => {
+        setLoading(false);
+        setPost(response.data);
+        setError("");
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+        setPost({});
+        setError(error.message);
+      });
+  }, []);
+  return (
+    <div>
+      {loading ? <p>Loading...</p> : <p></p>}
+      {error ? <p>Someting went wrong</p> : <p>{post.title}</p>}
+    </div>
+  );
+};
+
+export default DateFetching;
+```    
+
+DateFetching.js with useReducer
+```jsx
+import React, { useEffect, useReducer, useState } from "react";
+import axios from "axios";
+
+const initailState = {
+  post: {},
+  loading: false,
+  error: "",
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "FETCH_SUCCESS":
+      return {
+        post: action.payload,
+        loading: false,
+        error: "",
+      };
+    case "FETCH_ERROR":
+      return {
+        post: {},
+        loading: false,
+        error: "Something went wrong!",
+      };
+    default:
+      return state;
+  }
+};
+
+const DateFetching = () => {
+  const [state, dispatch] = useReducer(reducer, initailState);
+
+  useEffect(() => {
+    axios
+      .get("https://jsonplaceholder.typicode.com/posts/1")
+      .then((response) => {
+        dispatch({ type: "FETCH_SUCCESS", payload: response.data });
+      })
+      .catch((error) => {
+        console.error(error);
+        dispatch({ type: "FETCH_ERROR", payload: {} });
+      });
+  }, []);
+
+  return (
+    <div>
+      {state.loading ? <p>Loading...</p> : <p></p>}
+      {state.error ? <p>Someting went wrong</p> : <p>{state.post.title}</p>}
+    </div>
+  );
+};
+
+export default DateFetching;
+```
+
+### useState vs useReducer   
+
+> according to type of data.   
+useState : Number, string, Boolean   
+useReducer : Object or Array  
+
+> according to number of state transitions.       
+useState : one or two  
+useReducer : Too many  
+
+> Rekated state transitions. 
+useState : No  
+useReducer : true  
+
+> according to business logic.       
+useState : no business logic  
+useReducer : complex business logic 
+
+> Local vs global   
+useState : Local. 
+useReducer : Global. 
+
+
+
+
+
+
