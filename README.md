@@ -1,50 +1,128 @@
-#  useMemo    
+#  useRef   
 
-useMemo is hook that only recalculate the cashed values when on of the dependency has been changes.  
+1. in 'FocusInput.js' component add auto focus input element when component code.   
 
-1. show in browser when click 'Count - one' button it will delay to show updated result because of while loop in 'isEven' function.   
-
-2. show in browser when click 'Count -two' button- it also delay to show updated result because of when component rendering it will execute 'isEven' function.    
-
-3. show how to use 'useMemo' hook for cache the 'isEven' function value if now changes with 'countOne' state. 
-* here we should change 'isEven' function to variable(value).      
-
+FocusInput.js
 ```jsx
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useRef } from 'react';
 
-const Counter = () => {
-  const [counterOne, setCounterOne] = useState(0);
-  const [counterTwo, setCounterTwo] = useState(0);
+const FocusInput = () => {
 
-  const incrementOne = () => {
-    setCounterOne(counterOne + 1);
-  };
+  const inputRef = useRef(null);
 
-  const incrementTwo = () => {
-    setCounterTwo(counterTwo + 1);
-  };
-
-
-  const isEven = useMemo(() => {
-    let i = 0;
-    while(i<2000000000) i++;
-    return counterOne % 2 === 0;
-  }, [counterOne])  
+  useEffect(()=>{
+    inputRef.current.focus();
+  },[]);
 
   return (
     <div>
+       <input type="text" ref={inputRef} />
+    </div>
+  )
+}
+
+export default FocusInput;
+```
+
+2. create class component(ClassTimer.js) that count auto increment by timer and stop timer count (clearTimer) by calling function that click by button. 
+
+ClassTimer.jsx  
+```jsx
+import React, { Component } from "react";
+
+export class ClassTimer extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      count: 0,
+    };
+    this.interval = null;
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      this.setState({ count: this.state.count + 1 });
+    }, 2000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  render() {
+    return (
       <div>
-        <button onClick={incrementOne}>Count - one {counterOne} </button>
-        <span>{isEven ? 'Even' : 'Odd'}</span>
+        <h2>ClassTimer {this.state.count}</h2>
+        <button onClick={() => { clearInterval(this.interval);}}>Stop Timer</button>
       </div>
-      <div>
-        <button onClick={incrementTwo}>Count - two {counterTwo} </button>
-      </div>
+    );
+  }
+}
+
+export default ClassTimer;
+```
+
+3. create new functional component call 'HookTimer.js' and implement above functionality in functional component and show normally we can't stop timer by clicking button.   
+
+HookTimer.js
+```jsx
+import React, { useEffect } from "react";
+
+const HookTimer = () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((prevCount) => prevCount + 1);
+    });
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
+  return (
+    <div>
+      <h2>{count}</h2>
+      <button onClick={() => {}}>Clear Interval</button>
     </div>
   );
 };
 
-export default Counter;
+export default HookTimer;
 ```
 
-!important : useMemo function not use for every funtion optimization.    
+4. using useRef store timer in as a variable event value of the varialbe not change when component is updating.   
+
+HookTimer.js
+```js
+import React, { useEffect, useState, useRef } from "react";
+
+const HookTimer = () => {
+  const [count, setCount] = useState(0);
+  let intervalRef = useRef();
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setCount((prevCount) => prevCount + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalRef);
+    };
+  }, []);
+  return (
+    <div>
+      <h2>{count}</h2>
+      <button onClick={() => {clearInterval(intervalRef.current)}}>Clear Interval</button>
+    </div>
+  );
+};
+
+export default HookTimer;
+```
+
+
+
+
+
