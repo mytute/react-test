@@ -1,10 +1,12 @@
 import "./App.css";
-import FocusInput from "./components/FocusInput";
+import DocTitleOne from "./components/DocTitleOne";
+import DocTitleTwo from "./components/DocTitleTwo";
 
 function App() {
   return (
     <div>
-     <FocusInput/>
+      <DocTitleOne/>
+      <DocTitleTwo/>
     </div>
   );
 }

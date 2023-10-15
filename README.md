@@ -1,126 +1,98 @@
-#  useRef   
+#  Custom Hooks
 
-1. in 'FocusInput.js' component add auto focus input element when component code.   
+A custom Hook is basically a JavaScript function whose name starts with 'use'.  
 
-FocusInput.js
-```jsx
-import React, { useEffect, useRef } from 'react';
+A custom hook can also call other Hooks if required.   
 
-const FocusInput = () => {
+Why ? 
+Share logic - Alternative to HOCs and Render Props.  
 
-  const inputRef = useRef(null);
+1. create two component call 'DocTitleOne.jsx' and 'DocTitleTwo.jsx' 
 
-  useEffect(()=>{
-    inputRef.current.focus();
-  },[]);
-
-  return (
-    <div>
-       <input type="text" ref={inputRef} />
-    </div>
-  )
-}
-
-export default FocusInput;
-```
-
-2. create class component(ClassTimer.js) that count auto increment by timer and stop timer count (clearTimer) by calling function that click by button. 
-
-ClassTimer.jsx  
-```jsx
-import React, { Component } from "react";
-
-export class ClassTimer extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      count: 0,
-    };
-    this.interval = null;
-  }
-
-  componentDidMount() {
-    this.interval = setInterval(() => {
-      this.setState({ count: this.state.count + 1 });
-    }, 2000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  render() {
-    return (
-      <div>
-        <h2>ClassTimer {this.state.count}</h2>
-        <button onClick={() => { clearInterval(this.interval);}}>Stop Timer</button>
-      </div>
-    );
-  }
-}
-
-export default ClassTimer;
-```
-
-3. create new functional component call 'HookTimer.js' and implement above functionality in functional component and show normally we can't stop timer by clicking button.   
-
-HookTimer.js
-```jsx
-import React, { useEffect } from "react";
-
-const HookTimer = () => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCount((prevCount) => prevCount + 1);
-    });
-
-    return () => {
-      clearInterval(interval);
-    };
-  });
-  return (
-    <div>
-      <h2>{count}</h2>
-      <button onClick={() => {}}>Clear Interval</button>
-    </div>
-  );
-};
-
-export default HookTimer;
-```
-
-4. using useRef store timer in as a variable event value of the varialbe not change when component is updating.   
-
-HookTimer.js
+DocTitleOne.js
 ```js
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
+import useDocumentTitle from "./useDocumentTitle";
 
-const HookTimer = () => {
+const DocTitleOne = () => {
   const [count, setCount] = useState(0);
-  let intervalRef = useRef();
 
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCount((prevCount) => prevCount + 1);
-    }, 1000);
+  useDocumentTitle(count);
 
-    return () => {
-      clearInterval(intervalRef);
-    };
-  }, []);
   return (
     <div>
-      <h2>{count}</h2>
-      <button onClick={() => {clearInterval(intervalRef.current)}}>Clear Interval</button>
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        click {count}
+      </button>
     </div>
   );
 };
 
-export default HookTimer;
+export default DocTitleOne;
 ```
+
+DocTitleTwo.js
+```js
+import React, { useState } from "react";
+import useDocumentTitle from "./useDocumentTitle";
+
+const DocTitleTwo = () => {
+  const [count, setCount] = useState(0);
+
+  useDocumentTitle(count);
+  return (
+    <div>
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        click {count}
+      </button>
+    </div>
+  );
+};
+
+export default DocTitleTwo;
+```
+
+useDocumentTitle.js
+```js 
+import { useEffect } from "react";
+
+const useDocumentTitle = (count) => {
+  useEffect(() => {
+    document.title = `Count ${count}`;
+  }, [count]);
+};
+
+export default useDocumentTitle;
+```
+
+App.js
+```js
+import "./App.css";
+import DocTitleOne from "./components/DocTitleOne";
+import DocTitleTwo from "./components/DocTitleTwo";
+
+function App() {
+  return (
+    <div>
+      <DocTitleOne/>
+      <DocTitleTwo/>
+    </div>
+  );
+}
+
+export default App;
+```   
+
+
+
 
 
 
