@@ -24,14 +24,139 @@ It is usefull when passing callbacks to optimized child components that rely on 
 * Dependency Mistakes: Incorrectly specifying dependencies, or forgetting to specify them, can lead to bugs. This might not directly degrade performance, but the time spent debugging can be substantial.
 
 
+1. create component call "ParentComponent.js" inside component folder.      
+
+```js
+import React, { useState } from "react";
+import Count from "./Count";
+import Button from "./Button";
+import Title from "./Title";
+
+const ParentComponent = () => {
+  const [age, setAge] = useState(25);
+  const [salary, setSalary] = useState(50000);
+
+  const incrementAge = () => {
+    setAge(age + 1);
+  };
+  const incrementSalary = () => {
+    setSalary(salary + 1000);
+  };
+  return (
+    <div>
+      <Title />
+      <Count text="Age" count={age} />
+      <Button handleClick={incrementAge}>Increment Age</Button>
+      <Count text="Salary" count={salary} />
+      <Button handleClick={incrementSalary}>Increment Salary</Button>
+    </div>
+  );
+};
+
+export default ParentComponent;
+```
 
 
+2. create following "Title.js", "Button.js", and "Count.js" components inside "components" folder.    
 
+> Title.js     
+```js
+import React from "react";
 
+const Title = () => {
+  console.log("Rendering Title");
+  return <h2>useCallback Hook</h2>;
+};
 
+export default Title;
+``` 
 
+> Button.js    
+```js
+import React from "react";
 
+const Button = ({ handleClick, children }) => {
+  console.log("Rendering button -", children);
+  return <button onClick={handleClick}>{children}</button>;
+};
 
+export default Button;
+```
+> Count.js  
+```js
+import React from "react";
+
+const Count = ({ text, count }) => {
+  console.log("Rendering Count", count);
+  return (
+    <div>
+      {text} {count}
+    </div>
+  );
+};
+
+export default Count;
+```
+
+3. Now click and show that when click any button it rerender the "Title", "Button" and "Count" component using browser console.   
+
+```bash
+Rendering Title 2 Title.jsx:4
+Rendering Count 26 2 Count.jsx:5
+Rendering button - Increment Age 2 Button.jsx:4
+Rendering Count 50000 2 Count.jsx:5
+Rendering button - Increment Salary
+```
+
+4. wrap the "Title" component using "React.memo()" and check the browser console for rerendering. and show "Title" component not re rendered.  
+
+```js 
+import React from "react";
+
+const Title = () => {
+  console.log("Rendering Title");
+  return <h2>useCallback Hook</h2>;
+};
+
+export default React.memo(Title);
+```
+ 
+5. Add "React.memo()" to the other component in same way and show even we change it to "memo" it make keep rerender.    
+explain in the functional component funtion not identify same after component rerender and because of that here props detect as updated while rerending and make rerender.    
+For memorise the fucntion with it's dependency.   
+
+After add "React.memo()" for all the three component browser console should be like following way when click "Increment Age" button.       
+```bash
+Rendering Count 31 2 Count.jsx:5
+Rendering button - Increment Age 2 Button.jsx:4
+Rendering button - Increment Salary
+```
+
+For not to execute "Increment Salary" log we can use "useCallback" for all the function that inside the "ParentComponent" 
+```js 
+  const incrementAge = useCallback(() => {
+    setAge(age + 1);
+  },[age]);
+
+  const incrementSalary = useCallback(() => {
+    setSalary(salary + 1000);
+  },[salary]);
+```
+
+After click "Increment Age" button now only showing following logs in the console.   
+```bash 
+Rendering Count 26 2 Count.jsx:5
+Rendering button - Increment Age
+```
+
+### Summary
+
+By wrapping components with React.memo and memoizing callback functions with useCallback, we prevent unnecessary re-renders and optimize our React application:
+
+   1. React.memo prevents re-renders if props remain unchanged.
+   2. useCallback ensures that function references stay the same between renders unless dependencies change.
+
+This pattern is useful for performance optimization, especially in larger React applications where re-renders can impact the user experience.
 
 
 
