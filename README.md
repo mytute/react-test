@@ -163,3 +163,6 @@ npm start
 ```
 
 This example demonstrates using Redux without the Redux Toolkit. It requires manually managing actions, reducers, and the store, giving you more control, but also requiring more boilerplate code. You should see the same counter UI with buttons to increment, decrement, and increment by a specific amount.
+
+
+## Redux using redux tool kit 
