@@ -316,3 +316,75 @@ ClickCounter.js
 ```js
 export default UpdatedComponent(ClickCounter, 10);
 ```
+
+9. Typescript exmaple    
+
+ClickCounter.tsx    
+```ts 
+import React, { Component } from 'react';
+import { withCounter } from './withCounter';
+
+// Rename the interface to represent the component's props accurately
+interface ClickCounterProps {
+  count: number;
+  onIncrement: () => void;
+}
+
+// State is not used, but keeping it for structure consistency
+interface ClickCounterState {}
+
+class ClickCounter extends Component<ClickCounterProps, ClickCounterState> {
+  constructor(props: ClickCounterProps) {
+    super(props);
+  }
+
+  render() {
+    const { count, onIncrement } = this.props;
+    return (
+      <div>
+        <button onClick={onIncrement}>Click {count} times</button>
+      </div>
+    );
+  }
+}
+
+export default withCounter(ClickCounter);
+```
+
+withCounter.tsx    
+```ts 
+import React, { Component, ComponentType, ReactNode } from 'react'
+
+interface WithCounterState {
+  count:number;
+}
+
+interface WithCounterProps {
+  count:number;
+  increment: ()=>void;
+}
+
+export const withCounter = <T extends WithCounterProps> (OriginalComponent:ComponentType<T>) => {
+  class WithCounter extends Component<{}, WithCounterState> {
+    constructor(props:{}){
+      super(props);
+      this.state = {
+        count:0
+      }
+    }
+    increment = () =>{
+      this.setState((prevCount=> ({...prevCount, count:prevCount.count+1})))
+    }
+    render():ReactNode {
+        return (
+          <OriginalComponent 
+            {...(this.props as T)}
+            increment={this.increment} 
+           count={this.state.count}
+          /> 
+        )
+    }
+  }
+  return WithCounter; 
+}
+```
